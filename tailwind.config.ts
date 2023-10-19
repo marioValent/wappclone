@@ -20,6 +20,7 @@ const config: Config = {
                 "main-green": "#00a884",
                 "dark-green": "#008069",
                 "main-gray": "#f0f2f5",
+                "dark-gray": "#8696a0",
                 "app-gray": "#eae6df",
                 "app-gray-deeper": "#d1d7db",
                 "main-green-hover": "#017561",

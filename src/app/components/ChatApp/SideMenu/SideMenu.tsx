@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import Navbar from "./Navbar";
-import { Chat, User, getToken } from "@/app/common";
+import ContentList from "./ContentList";
 import Drawer from "../../shared/Drawer";
-import DrawerUsersList from "./AddConversationDrawer/DrawerUsersList";
-import ChatList from "./ChatList";
-import { useUsers } from "@/app/hooks";
+import Navbar from "./Navbar";
 import SearchBar from "../../shared/SearchBar";
+import { useUsers } from "@/app/hooks";
+import { Chat, User, getToken } from "@/app/common";
 
 interface SideMenuProps {
     onSelect: (chat: Chat) => void;
@@ -16,8 +15,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
     const [createConv, setCreateConv] = useState({ userId: "", friendId: "" });
     const users = useUsers();
     const [isDrawerOpen, setDrawerOpen] = useState(false);
-    const [searchedUsers, setSearchedUsers] = useState(Array<User>);
-    const [searchedListUsers, setSearchedListUsers] = useState(Array<User>);
+    const [searchedDrawerUsers, setSearchedDrawerUsers] = useState(Array<User>);
+    const [searchedChatListUsers, setSearchedChatListUsers] = useState(
+        Array<User>
+    );
     const [searchedChats, setSearchedChats] = useState(Array<Chat>);
 
     const openDrawer = () => {
@@ -28,12 +29,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
         setSearchedChats(listOfChats);
     };
 
-    const searchedUserListData = (listOfUsers: Array<User>) => {
-        setSearchedListUsers(listOfUsers);
+    const searchedChatListUsersData = (listOfUsers: Array<User>) => {
+        setSearchedChatListUsers(listOfUsers);
     };
 
     const searchedDrawerData = (listOfUsers: Array<User>) => {
-        setSearchedUsers(listOfUsers);
+        setSearchedDrawerUsers(listOfUsers);
     };
 
     const closeDrawer = () => {
@@ -54,8 +55,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
                     isDrawerOpen={isDrawerOpen}
                     handleSearchUsers={searchedDrawerData}
                 />
-                <DrawerUsersList
-                    searchedUsers={searchedUsers}
+                <ContentList
+                    id="drawer"
+                    title="CONTACTS ON WAPPCLONE"
+                    searchedUsers={searchedDrawerUsers}
                     users={users}
                     onSelect={onSelect}
                 />
@@ -63,12 +66,15 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
             <SearchBar
                 id="chat-list"
                 query="chat"
-                handleSearchUsers={searchedUserListData}
+                handleSearchUsers={searchedChatListUsersData}
                 handleSearchChats={searchedChatsData}
             />
-            <ChatList
+            <ContentList
+                id="chat-list"
+                isMain
+                title="CONTACTS"
                 searchedChats={searchedChats}
-                searchedUsers={searchedListUsers}
+                searchedUsers={searchedChatListUsers}
                 users={users}
                 onSelect={onSelect}
             />
