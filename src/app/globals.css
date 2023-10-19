@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
+}
+
+@layer components {
+    .btn {
+        @apply py-3 px-5 text-white font-bold rounded-full shadow-md;
+    }
+    .btn-primary {
+        @apply bg-blue-500 hover:bg-blue-700;
+    }
+    .btn-secondary {
+        @apply bg-main-green hover:bg-main-green-hover;
+    }
+    .btn-dark {
+        @apply bg-stone-900 hover:bg-stone-800;
+    }
+    /* .btn-x-close {
+        @apply border border-stone-300 outline-0 rounded-full px-1.5 hover:bg-stone-100;
+    } */
+    .modal-display {
+        @apply fixed top-0 left-0 w-full h-full flex items-center justify-center;
+    }
+    .modal {
+        @apply bg-white w-[30%] py-4 px-11 rounded-lg shadow-lg;
+    }
+
+    .input {
+        @apply bg-main-gray rounded-xl w-full;
+    }
+}
