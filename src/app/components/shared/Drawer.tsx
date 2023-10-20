@@ -17,29 +17,25 @@ const Drawer: React.FC<DrawerProps> = ({
 }) => {
     return (
         <div
-            className={`absolute inset-0 h-full bg-white transform transition-transform ease-in-out duration-300 ${
+            className={`absolute flex flex-col inset-0 h-full bg-white transform transition-transform ease-in-out duration-300 ${
                 isDrawerOpen ? "translate-x-0" : "-translate-x-full"
             }`}
         >
-            <div>
-                <div className="bg-dark-green flex items-center pt-16 pb-3 px-7 gap-7">
-                    <Button isIcon onClick={closeModal}>
-                        <Image
-                            src={arrowBack}
-                            style={{
-                                filter: "brightness(0) invert(1)",
-                                width: "1.75rem",
-                                height: "1.75rem",
-                            }}
-                            alt="go-back icon"
-                        />
-                    </Button>
-                    <h2 className="font-bold text-white text-lg">
-                        {titleText}
-                    </h2>
-                </div>
+            <div className="bg-dark-green flex items-center pt-16 pb-3 px-7 gap-7">
+                <Button isIcon onClick={closeModal}>
+                    <Image
+                        src={arrowBack}
+                        style={{
+                            filter: "brightness(0) invert(1)",
+                            width: "1.75rem",
+                            height: "1.75rem",
+                        }}
+                        alt="go-back icon"
+                    />
+                </Button>
+                <h2 className="font-bold text-white text-lg">{titleText}</h2>
             </div>
-            <div>{children}</div>
+            <div className="flex flex-col h-full">{children}</div>
         </div>
     );
 };

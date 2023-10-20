@@ -39,7 +39,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
     };
 
     return (
-        <div className="relative h-full overflow-hidden">
+        <div className="relative flex flex-col h-full overflow-hidden">
             <Navbar openDrawer={openDrawer} />
             <Drawer
                 closeModal={closeDrawer}

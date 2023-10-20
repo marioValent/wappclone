@@ -26,12 +26,7 @@ const ContentList = ({
 
     const renderContactsList = () => {
         return (
-            <div
-                id={`contacts-list-${id}`}
-                className={
-                    isMain === false ? "h-full overflow-auto scrollbar" : ""
-                }
-            >
+            <div id={`contacts-list-${id}`}>
                 <h2 className="pl-7 py-4 text-main-green">{title}</h2>
                 <ul>
                     {(searchedUsers ? searchedUsers : users).map(
