@@ -15,7 +15,7 @@ interface ContentListProps {
 
 const ContentList = ({
     id,
-    isMain,
+    isMain = true,
     searchedChats,
     searchedUsers,
     title,
@@ -26,7 +26,12 @@ const ContentList = ({
 
     const renderContactsList = () => {
         return (
-            <div id={`contacts-list-${id}`}>
+            <div
+                id={`contacts-list-${id}`}
+                className={
+                    isMain === false ? "h-full overflow-auto scrollbar" : ""
+                }
+            >
                 <h2 className="pl-7 py-4 text-main-green">{title}</h2>
                 <ul>
                     {(searchedUsers ? searchedUsers : users).map(
@@ -63,7 +68,10 @@ const ContentList = ({
         );
 
     return (
-        <div id={`content-list-${id}`}>
+        <div
+            id={`content-list-${id}`}
+            className="h-full overflow-auto scrollbar"
+        >
             {isMain && searchedChats && searchedChats?.length > 0 && (
                 <h2 className="pl-7 py-4 text-main-green">CHATS</h2>
             )}

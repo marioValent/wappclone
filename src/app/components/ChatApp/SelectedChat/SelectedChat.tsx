@@ -46,7 +46,7 @@ const SelectedChat: React.FC<SelectedChatProps> = ({ data }) => {
                 />
                 <h2>{getNavbarData()}</h2>
             </div>
-            <div className="h-full z-20">
+            <div className="h-full overflow-auto scrollbar z-20">
                 {getContentData()?.messages?.length > 0 ? (
                     <ol>
                         {getContentData()?.messages.map((message, index) => (

@@ -16,6 +16,15 @@
     }
 }
 
+@layer utilities {
+    .scrollbar::-webkit-scrollbar {
+        @apply w-1.5 h-1.5;
+    }
+    .scrollbar::-webkit-scrollbar-thumb {
+        @apply bg-[#bebebe];
+    }
+}
+
 @layer components {
     .btn {
         @apply py-3 px-5 text-white font-bold rounded-full shadow-md;

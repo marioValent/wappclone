@@ -55,6 +55,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
                 <ContentList
                     id="drawer"
                     title="CONTACTS ON WAPPCLONE"
+                    isMain={false}
                     searchedUsers={searchedDrawerUsers}
                     onSelect={onSelect}
                 />
@@ -67,7 +68,6 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
             />
             <ContentList
                 id="chat-list"
-                isMain
                 title="CONTACTS"
                 searchedChats={searchedChats}
                 searchedUsers={searchedChatListUsers}
