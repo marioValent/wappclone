@@ -10,7 +10,7 @@ interface ContentListProps {
     searchedChats?: Array<Chat>;
     searchedUsers?: Array<User> | null;
     title: string;
-    onSelect: (chat: Chat) => void;
+    onSelect: (data: User | Chat) => void;
 }
 
 const ContentList = ({
@@ -35,11 +35,7 @@ const ContentList = ({
                                 key={index}
                                 className="w-full p-3 pl-7 border-t border-main-gray text-left cursor-pointer hover:bg-main-gray"
                                 onClick={() => {
-                                    onSelect(
-                                        user.chat[0]
-                                            ? user.chat[0]
-                                            : ({} as Chat)
-                                    );
+                                    onSelect(user);
                                 }}
                             >
                                 {user.firstName} {user.lastName}

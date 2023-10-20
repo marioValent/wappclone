@@ -6,7 +6,7 @@ import SearchBar from "../../shared/SearchBar";
 import { Chat, User } from "@/app/common";
 
 interface SideMenuProps {
-    onSelect: (chat: Chat) => void;
+    onSelect: (data: Chat | User) => void;
 }
 
 const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {

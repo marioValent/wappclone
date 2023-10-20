@@ -1,13 +1,39 @@
 import React from "react";
 import Image from "next/image";
 import myProfileIcon from "@/../public/myProfile.svg";
-import { Chat } from "@/app/common";
+import { Chat, User } from "@/app/common";
 
 interface SelectedChatProps {
-    chat: Chat;
+    data: Chat | User;
 }
 
-const SelectedChat: React.FC<SelectedChatProps> = ({ chat }) => {
+const SelectedChat: React.FC<SelectedChatProps> = ({ data }) => {
+    const isUser = (data: Chat | User): data is User => {
+        return (data as User).firstName !== undefined;
+    };
+
+    const isChat = (data: Chat | User): data is Chat => {
+        return (data as Chat).friend !== undefined;
+    };
+
+    const getNavbarData = () => {
+        if (isUser(data)) {
+            return `${data.firstName} ${data.lastName}`;
+        } else if (isChat(data)) {
+            return `${data.friend.firstName} ${data.friend.lastName}`;
+        }
+        return;
+    };
+
+    const getContentData = (): Chat => {
+        if (isUser(data)) {
+            return data.chat[0];
+        } else if (isChat(data)) {
+            return data;
+        }
+        return {} as Chat;
+    };
+
     return (
         // <div className="relative z-10 h-full">
         <div className="relative flex flex-col h-full bg-chat-panel">
@@ -18,14 +44,12 @@ const SelectedChat: React.FC<SelectedChatProps> = ({ chat }) => {
                     alt="profile icon"
                     style={{ width: "3rem", height: "3rem" }}
                 />
-                <h2>
-                    {chat.friend?.firstName} {chat.friend?.lastName}
-                </h2>
+                <h2>{getNavbarData()}</h2>
             </div>
             <div className="h-full z-20">
-                {chat.messages?.length > 0 ? (
+                {getContentData()?.messages?.length > 0 ? (
                     <ol>
-                        {chat?.messages.map((message, index) => (
+                        {getContentData()?.messages.map((message, index) => (
                             <li key={index}>{message.text}</li>
                         ))}
                     </ol>

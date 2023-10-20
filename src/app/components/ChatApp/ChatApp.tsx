@@ -7,7 +7,7 @@ import SideMenu from "./SideMenu/SideMenu";
 import SelectedChat from "./SelectedChat/SelectedChat";
 import chatImg from "@/../public/convesation-img-default.png";
 import logoutIcon from "@/../public/logoutIcon.svg";
-import { Chat, deleteToken, dictionary } from "@/app/common";
+import { Chat, User, deleteToken, dictionary } from "@/app/common";
 
 const logoutStyle = {
     filter: "brightness(0) invert(1)",
@@ -15,11 +15,10 @@ const logoutStyle = {
 
 const ChatApp: React.FC = () => {
     const router = useRouter();
-    const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+    const [selectedChat, setSelectedChat] = useState<Chat | User | null>(null);
 
-    const handleChatSelect = (chat: Chat) => {
-        setSelectedChat(chat);
-        console.log(chat);
+    const handleChatSelect = (data: Chat | User) => {
+        setSelectedChat(data);
     };
 
     const logout = () => {
@@ -34,7 +33,7 @@ const ChatApp: React.FC = () => {
             </div>
             <div className="w-2/3 bg-main-gray border-l border-main-gray-deeper">
                 {selectedChat ? (
-                    <SelectedChat chat={selectedChat} />
+                    <SelectedChat data={selectedChat} />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full space-y-10">
                         <Image src={chatImg} alt="Profile Image" />
