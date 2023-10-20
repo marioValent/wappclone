@@ -17,7 +17,6 @@ export const useUsers = (): User[] => {
             if (response.ok) {
                 const data = await response.json();
                 const users: User[] = data.users;
-                console.log(users);
 
                 users.sort((a, b) => {
                     if (a.firstName < b.firstName) return -1;

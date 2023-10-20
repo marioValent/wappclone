@@ -62,7 +62,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
             axios
                 .get(`${BASE_URL}/api/${query}/search?query=${pinCode}`)
                 .then((response) => {
-                    console.log(response.data);
                     handleSearchChats && handleSearchChats(response.data.chats);
                     handleSearchUsers(response.data.users);
                 });

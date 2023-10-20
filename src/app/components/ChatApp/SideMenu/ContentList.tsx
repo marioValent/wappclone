@@ -1,14 +1,15 @@
 import React from "react";
-import { useChats } from "@/app/hooks";
+import Image from "next/image";
+import { useChats, useUsers } from "@/app/hooks";
 import { Chat, User } from "@/app/common";
+import loadingIcon from "@/../public/loadingIcon.svg";
 
 interface ContentListProps {
     id: string;
     isMain?: boolean;
     searchedChats?: Array<Chat>;
-    searchedUsers: Array<User>;
+    searchedUsers?: Array<User> | null;
     title: string;
-    users: Array<User>;
     onSelect: (chat: Chat) => void;
 }
 
@@ -18,10 +19,10 @@ const ContentList = ({
     searchedChats,
     searchedUsers,
     title,
-    users,
     onSelect,
 }: ContentListProps) => {
-    const chats = useChats();
+    const { chats, isLoading } = useChats();
+    const users = useUsers();
 
     const renderContactsList = () => {
         return (
@@ -49,15 +50,25 @@ const ContentList = ({
             </div>
         );
     };
-    if (searchedChats?.length === 0 && searchedUsers.length === 0)
+
+    if (isLoading)
+        return (
+            <Image
+                alt="loading-spiner"
+                src={loadingIcon}
+                className="mx-auto mt-16 animate-spin"
+            />
+        );
+    if (searchedChats?.length === 0 && searchedUsers?.length === 0)
         return (
             <p className="text-center p-16 text-dark-gray">
                 No chats, contacts or messages found.
             </p>
         );
+
     return (
         <div id={`content-list-${id}`}>
-            {isMain && searchedChats && (
+            {isMain && searchedChats && searchedChats?.length > 0 && (
                 <h2 className="pl-7 py-4 text-main-green">CHATS</h2>
             )}
 

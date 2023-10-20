@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
-import { BASE_URL, Chat, getToken } from "../common";
+import axios from "axios";
+import { BASE_URL, getToken } from "../common";
 
-export const useChats = (): Array<Chat> => {
+export const useChats = () => {
     const token = getToken();
     const [chats, setChats] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const getChats = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/api/chat/findAll`, {
-                method: "POST",
-                body: JSON.stringify({ token }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setChats(data.chats);
-            }
+            axios
+                .post(`${BASE_URL}/api/chat/findAll`, {
+                    token: token,
+                })
+                .then((response) => {
+                    setChats(response.data.chats);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
         } catch (error) {
-            console.error("Error fetching chats", error);
+            throw error;
         }
     };
 
@@ -25,5 +28,8 @@ export const useChats = (): Array<Chat> => {
         getChats();
     }, []);
 
-    return chats;
+    return {
+        chats,
+        isLoading,
+    };
 };

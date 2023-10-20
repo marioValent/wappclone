@@ -3,22 +3,19 @@ import ContentList from "./ContentList";
 import Drawer from "../../shared/Drawer";
 import Navbar from "./Navbar";
 import SearchBar from "../../shared/SearchBar";
-import { useUsers } from "@/app/hooks";
-import { Chat, User, getToken } from "@/app/common";
+import { Chat, User } from "@/app/common";
 
 interface SideMenuProps {
     onSelect: (chat: Chat) => void;
 }
 
 const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
-    const token = getToken();
     const [createConv, setCreateConv] = useState({ userId: "", friendId: "" });
-    const users = useUsers();
     const [isDrawerOpen, setDrawerOpen] = useState(false);
-    const [searchedDrawerUsers, setSearchedDrawerUsers] = useState(Array<User>);
-    const [searchedChatListUsers, setSearchedChatListUsers] = useState(
-        Array<User>
-    );
+    const [searchedDrawerUsers, setSearchedDrawerUsers] =
+        useState<Array<User> | null>();
+    const [searchedChatListUsers, setSearchedChatListUsers] =
+        useState<Array<User> | null>();
     const [searchedChats, setSearchedChats] = useState(Array<Chat>);
 
     const openDrawer = () => {
@@ -59,7 +56,6 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
                     id="drawer"
                     title="CONTACTS ON WAPPCLONE"
                     searchedUsers={searchedDrawerUsers}
-                    users={users}
                     onSelect={onSelect}
                 />
             </Drawer>
@@ -75,7 +71,6 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
                 title="CONTACTS"
                 searchedChats={searchedChats}
                 searchedUsers={searchedChatListUsers}
-                users={users}
                 onSelect={onSelect}
             />
         </div>

@@ -32,7 +32,7 @@ const ChatApp: React.FC = () => {
             <div className="w-1/3 bg-white">
                 <SideMenu onSelect={handleChatSelect} />
             </div>
-            <div className="w-2/3 bg-stone-100">
+            <div className="w-2/3 bg-main-gray border-l border-main-gray-deeper">
                 {selectedChat ? (
                     <SelectedChat chat={selectedChat} />
                 ) : (
