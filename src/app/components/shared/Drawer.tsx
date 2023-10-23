@@ -35,7 +35,7 @@ const Drawer: React.FC<DrawerProps> = ({
                 </Button>
                 <h2 className="font-bold text-white text-lg">{titleText}</h2>
             </div>
-            <div className="flex flex-col h-full">{children}</div>
+            <div>{children}</div>
         </div>
     );
 };

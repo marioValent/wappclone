@@ -14,7 +14,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     {
         id,
-        className,
+        className = "input focus:outline-none p-2",
         classNameDiv,
         iconLeft,
         iconRight,
@@ -39,7 +39,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
                 {iconLeft}
                 <input
                     id={id}
-                    className="input focus:outline-none w-full p-2 rounded-xl"
+                    className={className}
                     name={id}
                     ref={ref}
                     type={type}

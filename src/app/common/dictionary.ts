@@ -35,4 +35,7 @@ export const dictionary = {
             confirmPasswordPlaceholder: "Confirm your password...",
         },
     },
+    selectedChat: {
+        messageInputPlaceholder: "Type a message...",
+    },
 };

@@ -20,7 +20,7 @@ const Navbar = ({ openDrawer }: NavBarProps) => {
     };
 
     return (
-        <div className="flex justify-between bg-main-gray p-1">
+        <div className="flex justify-between bg-main-gray px-2 py-1">
             <Image
                 alt="profile icon"
                 src={myProfileIcon}

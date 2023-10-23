@@ -56,7 +56,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
             if (response.ok) {
                 const responseData = await response.json();
                 if (!responseData.token) return alert("The password is wrong");
-
                 const token = responseData.token;
                 setToken(token);
                 closeModal();

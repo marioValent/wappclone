@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Button from "../shared/Button";
@@ -16,10 +16,17 @@ const logoutStyle = {
 const ChatApp: React.FC = () => {
     const router = useRouter();
     const [selectedChat, setSelectedChat] = useState<Chat | User | null>(null);
+    const messageInputRef = useRef<HTMLInputElement>(null);
 
     const handleChatSelect = (data: Chat | User) => {
         setSelectedChat(data);
     };
+
+    useEffect(() => {
+        if (selectedChat) {
+            messageInputRef.current?.focus();
+        }
+    }, [selectedChat]);
 
     const logout = () => {
         deleteToken();
@@ -33,7 +40,7 @@ const ChatApp: React.FC = () => {
             </div>
             <div className="w-2/3 bg-main-gray border-l border-main-gray-deeper">
                 {selectedChat ? (
-                    <SelectedChat data={selectedChat} />
+                    <SelectedChat ref={messageInputRef} data={selectedChat} />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full space-y-10">
                         <Image src={chatImg} alt="Profile Image" />
