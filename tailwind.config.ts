@@ -2,7 +2,11 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
     mode: "jit",
-    safelist: [{ pattern: /^btn-/, variants: ["hover", "focus"] }],
+    safelist: [
+        { pattern: /^btn-/, variants: ["hover", "focus"] },
+        "self-end",
+        "self-start",
+    ],
     content: [
         "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -19,6 +23,7 @@ const config: Config = {
             colors: {
                 "main-green": "#00a884",
                 "dark-green": "#008069",
+                "green-msg": "#d9fdd3",
                 "main-gray": "#f0f2f5",
                 "dark-gray": "#8696a0",
                 "app-gray": "#eae6df",

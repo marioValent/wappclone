@@ -19,7 +19,11 @@ export async function POST(request: NextRequest) {
                 ],
             },
             include: {
-                messages: true,
+                messages: {
+                    orderBy: {
+                        createdAt: "desc",
+                    },
+                },
                 friend: true,
             },
         });
