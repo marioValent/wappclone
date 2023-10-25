@@ -5,10 +5,10 @@ export type User = {
     chat: Chat[];
 };
 export type Message = {
-    text: string;
+    createdAt: string;
     receiverId: string;
     senderId: string;
-    createdAt: string;
+    text: string;
 };
 export type Chat = {
     id: string;

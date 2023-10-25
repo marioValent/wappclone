@@ -12,6 +12,9 @@ export async function POST(request: NextRequest) {
                 userId: userId,
                 friendId: body.friendId,
             },
+            include: {
+                messages: true,
+            },
         });
 
         return NextResponse.json({

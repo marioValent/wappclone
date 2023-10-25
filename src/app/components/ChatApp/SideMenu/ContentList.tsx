@@ -85,10 +85,7 @@ const ContentList = ({
                                     {chat.friend.lastName}
                                 </h2>
                                 <p className="text-sm">
-                                    {
-                                        chat.messages[chat.messages.length - 1]
-                                            ?.text
-                                    }
+                                    {chat.messages[0]?.text}
                                 </p>
                             </li>
                         )

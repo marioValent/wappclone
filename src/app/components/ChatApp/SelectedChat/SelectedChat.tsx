@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Input from "../../shared/Input";
 import attachIcon from "@/../public/attachIcon.svg";
@@ -11,7 +11,15 @@ import {
     displayTailOutSvg,
     formatTime,
 } from "./SelectedChat.utils";
-import { Chat, User, dictionary } from "@/app/common";
+import {
+    BASE_URL,
+    Chat,
+    ChatDefault,
+    User,
+    dictionary,
+    getToken,
+} from "@/app/common";
+import axios from "axios";
 
 interface SelectedChatProps {
     data: Chat | User;
@@ -20,6 +28,7 @@ interface SelectedChatProps {
 const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
     function SelectedChat({ data }, ref) {
         const [messageInputValue, setMessageInputValue] = useState("");
+        const scrollRef = useRef<HTMLDivElement | null>(null);
 
         const isUser = (data: Chat | User): data is User => {
             return (data as User).firstName !== undefined;
@@ -42,10 +51,9 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             if (isUser(data)) {
                 return data.chat[0];
             } else if (isChat(data)) {
-                console.log(data.messages);
                 return data;
             }
-            return {} as Chat;
+            return ChatDefault;
         };
 
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,13 +61,55 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             setMessageInputValue(value);
         };
 
-        const handleKeyPress = (
-            event: React.KeyboardEvent<HTMLInputElement>
-        ) => {
-            if (event.key === "Enter") {
-                console.log("Enter clicked");
+        const handleSendMessage = async () => {
+            if (getContentData() === undefined && messageInputValue) {
+                try {
+                    const chatResponse = await axios.post(
+                        `${BASE_URL}/api/chat/create`,
+                        {
+                            token: getToken(),
+                            friendId: data.id,
+                        }
+                    );
+                    console.log(chatResponse.data.chat);
+
+                    const chatData = chatResponse.data.chat;
+                    const messageResponse = await axios.post(
+                        `${BASE_URL}/api/message/send`,
+                        {
+                            senderId: chatData.userId,
+                            receiverId: chatData.friendId,
+                            text: messageInputValue,
+                            chatId: chatData.id,
+                        }
+                    );
+                    console.log("message Status: ", messageResponse.data);
+                    setMessageInputValue("");
+                } catch (error) {
+                    throw error;
+                }
+            } else if (messageInputValue) {
+                const data = getContentData();
+                axios.post(`${BASE_URL}/api/message/send`, {
+                    senderId: data.userId,
+                    receiverId: data.friendId,
+                    text: messageInputValue,
+                    chatId: data.id,
+                });
+                setMessageInputValue("");
             }
         };
+        const handleKeyPress = async (
+            event: React.KeyboardEvent<HTMLInputElement>
+        ) => {
+            if (event.key === "Enter") handleSendMessage();
+        };
+
+        useEffect(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            }
+        }, [data.id]);
 
         return (
             <div className="relative z-10 h-full">
@@ -73,7 +123,10 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         />
                         <h2>{getNavbarData()}</h2>
                     </div>
-                    <div className="h-full grid overflow-auto scrollbar z-20">
+                    <div
+                        className="h-full grid overflow-auto scrollbar z-20"
+                        ref={scrollRef}
+                    >
                         {getContentData()?.messages?.length > 0 ? (
                             <ol className="flex flex-col-reverse flex-grow px-16 py-4">
                                 {getContentData()?.messages.map(
@@ -150,8 +203,9 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         {messageInputValue ? (
                             <Image
                                 alt="send-arrow-icon"
-                                src={sendArrow}
                                 className="w-8 cursor-pointer"
+                                src={sendArrow}
+                                onClick={handleSendMessage}
                             />
                         ) : (
                             <Image

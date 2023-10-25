@@ -10,7 +10,6 @@ interface SideMenuProps {
 }
 
 const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
-    const [createConv, setCreateConv] = useState({ userId: "", friendId: "" });
     const [isDrawerOpen, setDrawerOpen] = useState(false);
     const [searchedDrawerUsers, setSearchedDrawerUsers] =
         useState<Array<User> | null>();
