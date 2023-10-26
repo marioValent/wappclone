@@ -1,4 +1,10 @@
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import React, {
+    Fragment,
+    forwardRef,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import Image from "next/image";
 import Input from "../../shared/Input";
 import attachIcon from "@/../public/attachIcon.svg";
@@ -7,8 +13,10 @@ import keyboardVoiceIcon from "@/../public/keyboardVoiceIcon.svg";
 import myProfileIcon from "@/../public/myProfile.svg";
 import sendArrow from "@/../public/sendArrow.svg";
 import {
+    displayDate,
     displayTailInSvg,
     displayTailOutSvg,
+    formatDay,
     formatTime,
 } from "./SelectedChat.utils";
 import {
@@ -27,8 +35,8 @@ interface SelectedChatProps {
 
 const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
     function SelectedChat({ data }, ref) {
-        const [messageInputValue, setMessageInputValue] = useState("");
         const scrollRef = useRef<HTMLDivElement | null>(null);
+        const [messageInputValue, setMessageInputValue] = useState("");
 
         const isUser = (data: Chat | User): data is User => {
             return (data as User).firstName !== undefined;
@@ -74,16 +82,13 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                     console.log(chatResponse.data.chat);
 
                     const chatData = chatResponse.data.chat;
-                    const messageResponse = await axios.post(
-                        `${BASE_URL}/api/message/send`,
-                        {
-                            senderId: chatData.userId,
-                            receiverId: chatData.friendId,
-                            text: messageInputValue,
-                            chatId: chatData.id,
-                        }
-                    );
-                    console.log("message Status: ", messageResponse.data);
+                    await axios.post(`${BASE_URL}/api/message/send`, {
+                        senderId: chatData.userId,
+                        receiverId: chatData.friendId,
+                        text: messageInputValue,
+                        chatId: chatData.id,
+                    });
+
                     setMessageInputValue("");
                 } catch (error) {
                     throw error;
@@ -128,47 +133,63 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         ref={scrollRef}
                     >
                         {getContentData()?.messages?.length > 0 ? (
-                            <ol className="flex flex-col-reverse flex-grow px-16 py-4">
+                            <ol className="relative flex flex-col-reverse flex-grow px-16 py-4">
                                 {getContentData()?.messages.map(
                                     (message, index) => (
-                                        <li
-                                            key={index}
-                                            className={`flex my-0.5 self-${
-                                                message.senderId ===
-                                                getContentData().userId
-                                                    ? "end"
-                                                    : "start"
-                                            }`}
-                                        >
-                                            {message.senderId ===
-                                            getContentData().userId ? (
-                                                <>
-                                                    <span className="relative p-1.5 pr-10 rounded-lg rounded-tr-[0] text-sm max-w-md bg-green-msg">
-                                                        {message.text}
-                                                        <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
-                                                            {formatTime(
-                                                                message.createdAt
-                                                            )}
+                                        <Fragment key={`fragment-${index}`}>
+                                            <li
+                                                key={index}
+                                                className={`flex my-0.5 self-${
+                                                    message.senderId ===
+                                                    getContentData().userId
+                                                        ? "end"
+                                                        : "start"
+                                                }`}
+                                            >
+                                                {message.senderId ===
+                                                getContentData().userId ? (
+                                                    <>
+                                                        <span className="relative p-1.5 pr-10 rounded-lg rounded-tr-[0] text-sm max-w-md bg-green-msg">
+                                                            {message.text}
+                                                            <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
+                                                                {formatTime(
+                                                                    message.createdAt
+                                                                )}
+                                                            </span>
                                                         </span>
-                                                    </span>
 
-                                                    {displayTailOutSvg()}
-                                                </>
-                                            ) : (
-                                                <>
-                                                    {displayTailInSvg()}
+                                                        {displayTailOutSvg()}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {displayTailInSvg()}
 
-                                                    <span className="relative p-1.5 pr-10 rounded-lg rounded-tl-[0] text-sm max-w-md bg-white">
-                                                        {message.text}
-                                                        <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
-                                                            {formatTime(
-                                                                message.createdAt
-                                                            )}
+                                                        <span className="relative p-1.5 pr-10 rounded-lg rounded-tl-[0] text-sm max-w-md bg-white">
+                                                            {message.text}
+                                                            <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
+                                                                {formatTime(
+                                                                    message.createdAt
+                                                                )}
+                                                            </span>
                                                         </span>
-                                                    </span>
-                                                </>
-                                            )}
-                                        </li>
+                                                    </>
+                                                )}
+                                            </li>
+                                            {displayDate(
+                                                index,
+                                                index + 1,
+                                                getContentData().messages
+                                            ) ? (
+                                                <span
+                                                    key={`date-${index}`}
+                                                    className="bg-white text-sm text-[#54656F] p-2 my-4 rounded-lg z-30 w-fit flex mx-auto"
+                                                >
+                                                    {formatDay(
+                                                        message.createdAt
+                                                    )}
+                                                </span>
+                                            ) : null}
+                                        </Fragment>
                                     )
                                 )}
                             </ol>

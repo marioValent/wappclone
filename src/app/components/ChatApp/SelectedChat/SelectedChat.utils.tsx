@@ -1,3 +1,5 @@
+import { Message } from "@/app/common";
+
 export const displayTailInSvg = () => {
     return (
         <svg
@@ -51,4 +53,59 @@ export const formatTime = (time: string): string => {
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
+};
+
+export const formatDay = (date: string): string => {
+    const todayDate = new Date();
+    const targetDate = new Date(date);
+
+    const timeDifference = todayDate.getTime() - targetDate.getTime();
+    const daysDifference = timeDifference / (1000 * 3600 * 24);
+    const yesterdayMidnight = new Date();
+    yesterdayMidnight.setDate(todayDate.getDate() - 1);
+    yesterdayMidnight.setHours(0, 0, 0, 0);
+    if (daysDifference < 1) {
+        const midnight = new Date(todayDate);
+        midnight.setHours(0, 0, 0, 0);
+        if (targetDate.getTime() >= midnight.getTime()) {
+            return "Today";
+        } else {
+            return "Yesterday";
+        }
+    } else if (targetDate.getTime() >= yesterdayMidnight.getTime()) {
+        return "Yesterday";
+    } else if (daysDifference <= 7) {
+        const daysOfWeek = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+        ];
+        const dayOfWeekIndex = targetDate.getDay();
+        return daysOfWeek[dayOfWeekIndex];
+    } else {
+        const day = targetDate.getDate().toString().padStart(2, "0");
+        const month = (targetDate.getMonth() + 1).toString().padStart(2, "0");
+        const year = targetDate.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+};
+
+export const displayDate = (
+    index: number,
+    nextIndex: number,
+    array: Message[]
+): boolean => {
+    if (
+        index === array.length - 1 ||
+        formatDay(array[index].createdAt) !==
+            formatDay(array[nextIndex].createdAt)
+    ) {
+        return true;
+    }
+
+    return false;
 };
