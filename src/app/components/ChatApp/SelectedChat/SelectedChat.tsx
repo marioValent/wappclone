@@ -6,8 +6,10 @@ import React, {
     useState,
 } from "react";
 import Image from "next/image";
+import axios from "axios";
 import Input from "../../shared/Input";
 import attachIcon from "@/../public/attachIcon.svg";
+import closeIcon from "@/../public/closeIcon.svg";
 import emojiIcon from "@/../public/emojiIcon.svg";
 import keyboardVoiceIcon from "@/../public/keyboardVoiceIcon.svg";
 import myProfileIcon from "@/../public/myProfile.svg";
@@ -27,7 +29,7 @@ import {
     dictionary,
     getToken,
 } from "@/app/common";
-import axios from "axios";
+import EmojiDrawer from "./EmojiDrawer";
 
 interface SelectedChatProps {
     data: Chat | User;
@@ -37,6 +39,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
     function SelectedChat({ data }, ref) {
         const scrollRef = useRef<HTMLDivElement | null>(null);
         const [messageInputValue, setMessageInputValue] = useState("");
+        const [isDrawerOpen, setDrawerOpen] = useState(false);
 
         const isUser = (data: Chat | User): data is User => {
             return (data as User).firstName !== undefined;
@@ -79,7 +82,6 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                             friendId: data.id,
                         }
                     );
-                    console.log(chatResponse.data.chat);
 
                     const chatData = chatResponse.data.chat;
                     await axios.post(`${BASE_URL}/api/message/send`, {
@@ -108,6 +110,19 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             event: React.KeyboardEvent<HTMLInputElement>
         ) => {
             if (event.key === "Enter") handleSendMessage();
+        };
+
+        const openEmojiDrawer = () => {
+            setDrawerOpen(true);
+        };
+        const closeEmojiDrawer = () => {
+            setDrawerOpen(false);
+        };
+
+        const handleEmojiSelect = (emoji: string) => {
+            setMessageInputValue(
+                (prevMessageInputValue) => prevMessageInputValue + emoji
+            );
         };
 
         useEffect(() => {
@@ -195,46 +210,64 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                             </ol>
                         ) : null}
                     </div>
-                    <div className="flex items-center px-4 gap-2 bg-main-gray h-20 z-20">
-                        <div className="flex justify-center gap-3 w-[10%]">
-                            <Image
-                                alt="emoji-icon"
-                                src={emojiIcon}
-                                className="w-7 cursor-pointer"
-                            />
-                            <Image
-                                alt="attachIcon-icon"
-                                className="w-7 cursor-pointer"
-                                src={attachIcon}
-                                title="Attach"
-                            />
-                        </div>
-                        <Input
-                            id="send-message-input"
-                            classNameDiv="w-full"
-                            className="input bg-white focus:outline-none p-3"
-                            placeholder={
-                                dictionary.selectedChat.messageInputPlaceholder
-                            }
-                            ref={ref}
-                            value={messageInputValue}
-                            onKeyDown={handleKeyPress}
-                            onChange={handleInputChange}
+
+                    <div>
+                        <EmojiDrawer
+                            isDrawerOpen={isDrawerOpen}
+                            onEmojiSelect={handleEmojiSelect}
                         />
-                        {messageInputValue ? (
-                            <Image
-                                alt="send-arrow-icon"
-                                className="w-8 cursor-pointer"
-                                src={sendArrow}
-                                onClick={handleSendMessage}
+                        <div className="relative flex items-center px-4 gap-2 bg-main-gray h-20 z-30">
+                            <div className="flex justify-center gap-3 w-[10%]">
+                                {isDrawerOpen ? (
+                                    <Image
+                                        alt="close-icon"
+                                        src={closeIcon}
+                                        className="w-7 cursor-pointer"
+                                        onClick={closeEmojiDrawer}
+                                    />
+                                ) : (
+                                    <Image
+                                        alt="emoji-icon"
+                                        src={emojiIcon}
+                                        className="w-7 cursor-pointer"
+                                        onClick={openEmojiDrawer}
+                                    />
+                                )}
+                                <Image
+                                    alt="attachIcon-icon"
+                                    className="w-7 cursor-pointer"
+                                    src={attachIcon}
+                                    title="Attach"
+                                />
+                            </div>
+                            <Input
+                                id="send-message-input"
+                                classNameDiv="w-full"
+                                className="input bg-white focus:outline-none p-3"
+                                placeholder={
+                                    dictionary.selectedChat
+                                        .messageInputPlaceholder
+                                }
+                                ref={ref}
+                                value={messageInputValue}
+                                onKeyDown={handleKeyPress}
+                                onChange={handleInputChange}
                             />
-                        ) : (
-                            <Image
-                                alt="keyboard-voice-icon"
-                                src={keyboardVoiceIcon}
-                                className="w-8 cursor-pointer"
-                            />
-                        )}
+                            {messageInputValue ? (
+                                <Image
+                                    alt="send-arrow-icon"
+                                    className="w-8 cursor-pointer"
+                                    src={sendArrow}
+                                    onClick={handleSendMessage}
+                                />
+                            ) : (
+                                <Image
+                                    alt="keyboard-voice-icon"
+                                    src={keyboardVoiceIcon}
+                                    className="w-8 cursor-pointer"
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
