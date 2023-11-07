@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { User } from "../common";
 import { getToken } from "../common";
 
-const useCurrentUser = () => {
+export const useCurrentUser = () => {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
@@ -28,5 +28,3 @@ const useCurrentUser = () => {
 
     return user;
 };
-
-export default useCurrentUser;

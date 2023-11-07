@@ -22,7 +22,8 @@ model User {
   updatedAt        DateTime  @updatedAt
   sentMessages     Message[] @relation("sender")
   receivedMessages Message[] @relation("receiver")
-  chat             Chat[]
+  chat             Chat[]    @relation("user")
+  chatFriend       Chat[]    @relation("friend")
 }
 
 model Message {
@@ -40,8 +41,9 @@ model Message {
 
 model Chat {
   id        String    @id @default(cuid())
+  user      User      @relation(name: "user", fields: [userId], references: [id]) // Define the user relation
   userId    String
-  friend    User      @relation(fields: [friendId], references: [id])
+  friend    User      @relation(name: "friend", fields: [friendId], references: [id])
   friendId  String
   messages  Message[]
   createdAt DateTime  @default(now())

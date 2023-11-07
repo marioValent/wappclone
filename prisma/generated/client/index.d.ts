@@ -1027,12 +1027,14 @@ export namespace Prisma {
     sentMessages: number
     receivedMessages: number
     chat: number
+    chatFriend: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     sentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
     receivedMessages?: boolean | UserCountOutputTypeCountReceivedMessagesArgs
     chat?: boolean | UserCountOutputTypeCountChatArgs
+    chatFriend?: boolean | UserCountOutputTypeCountChatFriendArgs
   }
 
   // Custom InputTypes
@@ -1068,6 +1070,14 @@ export namespace Prisma {
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountChatArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: ChatWhereInput
+  }
+
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountChatFriendArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     where?: ChatWhereInput
   }
 
@@ -1302,6 +1312,7 @@ export namespace Prisma {
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
     receivedMessages?: boolean | User$receivedMessagesArgs<ExtArgs>
     chat?: boolean | User$chatArgs<ExtArgs>
+    chatFriend?: boolean | User$chatFriendArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1320,6 +1331,7 @@ export namespace Prisma {
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
     receivedMessages?: boolean | User$receivedMessagesArgs<ExtArgs>
     chat?: boolean | User$chatArgs<ExtArgs>
+    chatFriend?: boolean | User$chatFriendArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -1330,6 +1342,7 @@ export namespace Prisma {
       sentMessages: Prisma.$MessagePayload<ExtArgs>[]
       receivedMessages: Prisma.$MessagePayload<ExtArgs>[]
       chat: Prisma.$ChatPayload<ExtArgs>[]
+      chatFriend: Prisma.$ChatPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetResult<{
       id: string
@@ -1710,6 +1723,8 @@ export namespace Prisma {
     receivedMessages<T extends User$receivedMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, 'findMany'> | Null>;
 
     chat<T extends User$chatArgs<ExtArgs> = {}>(args?: Subset<T, User$chatArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    chatFriend<T extends User$chatFriendArgs<ExtArgs> = {}>(args?: Subset<T, User$chatFriendArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2104,6 +2119,27 @@ export namespace Prisma {
    * User.chat
    */
   export type User$chatArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chat
+     */
+    select?: ChatSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ChatInclude<ExtArgs> | null
+    where?: ChatWhereInput
+    orderBy?: ChatOrderByWithRelationInput | ChatOrderByWithRelationInput[]
+    cursor?: ChatWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ChatScalarFieldEnum | ChatScalarFieldEnum[]
+  }
+
+
+  /**
+   * User.chatFriend
+   */
+  export type User$chatFriendArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Chat
      */
@@ -3267,6 +3303,7 @@ export namespace Prisma {
     friendId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
     friend?: boolean | UserDefaultArgs<ExtArgs>
     messages?: boolean | Chat$messagesArgs<ExtArgs>
     _count?: boolean | ChatCountOutputTypeDefaultArgs<ExtArgs>
@@ -3281,6 +3318,7 @@ export namespace Prisma {
   }
 
   export type ChatInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
     friend?: boolean | UserDefaultArgs<ExtArgs>
     messages?: boolean | Chat$messagesArgs<ExtArgs>
     _count?: boolean | ChatCountOutputTypeDefaultArgs<ExtArgs>
@@ -3290,6 +3328,7 @@ export namespace Prisma {
   export type $ChatPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     name: "Chat"
     objects: {
+      user: Prisma.$UserPayload<ExtArgs>
       friend: Prisma.$UserPayload<ExtArgs>
       messages: Prisma.$MessagePayload<ExtArgs>[]
     }
@@ -3663,6 +3702,8 @@ export namespace Prisma {
    */
   export interface Prisma__ChatClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
+
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
 
     friend<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
 
@@ -4190,6 +4231,7 @@ export namespace Prisma {
     sentMessages?: MessageListRelationFilter
     receivedMessages?: MessageListRelationFilter
     chat?: ChatListRelationFilter
+    chatFriend?: ChatListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -4204,6 +4246,7 @@ export namespace Prisma {
     sentMessages?: MessageOrderByRelationAggregateInput
     receivedMessages?: MessageOrderByRelationAggregateInput
     chat?: ChatOrderByRelationAggregateInput
+    chatFriend?: ChatOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -4221,6 +4264,7 @@ export namespace Prisma {
     sentMessages?: MessageListRelationFilter
     receivedMessages?: MessageListRelationFilter
     chat?: ChatListRelationFilter
+    chatFriend?: ChatListRelationFilter
   }, "id">
 
   export type UserOrderByWithAggregationInput = {
@@ -4331,6 +4375,7 @@ export namespace Prisma {
     friendId?: StringFilter<"Chat"> | string
     createdAt?: DateTimeFilter<"Chat"> | Date | string
     updatedAt?: DateTimeFilter<"Chat"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
     friend?: XOR<UserRelationFilter, UserWhereInput>
     messages?: MessageListRelationFilter
   }
@@ -4341,6 +4386,7 @@ export namespace Prisma {
     friendId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
     friend?: UserOrderByWithRelationInput
     messages?: MessageOrderByRelationAggregateInput
   }
@@ -4354,6 +4400,7 @@ export namespace Prisma {
     friendId?: StringFilter<"Chat"> | string
     createdAt?: DateTimeFilter<"Chat"> | Date | string
     updatedAt?: DateTimeFilter<"Chat"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
     friend?: XOR<UserRelationFilter, UserWhereInput>
     messages?: MessageListRelationFilter
   }, "id">
@@ -4391,7 +4438,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
-    chat?: ChatCreateNestedManyWithoutFriendInput
+    chat?: ChatCreateNestedManyWithoutUserInput
+    chatFriend?: ChatCreateNestedManyWithoutFriendInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -4405,7 +4453,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
-    chat?: ChatUncheckedCreateNestedManyWithoutFriendInput
+    chat?: ChatUncheckedCreateNestedManyWithoutUserInput
+    chatFriend?: ChatUncheckedCreateNestedManyWithoutFriendInput
   }
 
   export type UserUpdateInput = {
@@ -4419,7 +4468,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
-    chat?: ChatUpdateManyWithoutFriendNestedInput
+    chat?: ChatUpdateManyWithoutUserNestedInput
+    chatFriend?: ChatUpdateManyWithoutFriendNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -4433,7 +4483,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
-    chat?: ChatUncheckedUpdateManyWithoutFriendNestedInput
+    chat?: ChatUncheckedUpdateManyWithoutUserNestedInput
+    chatFriend?: ChatUncheckedUpdateManyWithoutFriendNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -4538,10 +4589,10 @@ export namespace Prisma {
 
   export type ChatCreateInput = {
     id?: string
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    friend: UserCreateNestedOneWithoutChatInput
+    user: UserCreateNestedOneWithoutChatInput
+    friend: UserCreateNestedOneWithoutChatFriendInput
     messages?: MessageCreateNestedManyWithoutChatInput
   }
 
@@ -4556,10 +4607,10 @@ export namespace Prisma {
 
   export type ChatUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    friend?: UserUpdateOneRequiredWithoutChatNestedInput
+    user?: UserUpdateOneRequiredWithoutChatNestedInput
+    friend?: UserUpdateOneRequiredWithoutChatFriendNestedInput
     messages?: MessageUpdateManyWithoutChatNestedInput
   }
 
@@ -4582,7 +4633,6 @@ export namespace Prisma {
 
   export type ChatUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4822,6 +4872,13 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
+  export type ChatCreateNestedManyWithoutUserInput = {
+    create?: XOR<ChatCreateWithoutUserInput, ChatUncheckedCreateWithoutUserInput> | ChatCreateWithoutUserInput[] | ChatUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChatCreateOrConnectWithoutUserInput | ChatCreateOrConnectWithoutUserInput[]
+    createMany?: ChatCreateManyUserInputEnvelope
+    connect?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
+  }
+
   export type ChatCreateNestedManyWithoutFriendInput = {
     create?: XOR<ChatCreateWithoutFriendInput, ChatUncheckedCreateWithoutFriendInput> | ChatCreateWithoutFriendInput[] | ChatUncheckedCreateWithoutFriendInput[]
     connectOrCreate?: ChatCreateOrConnectWithoutFriendInput | ChatCreateOrConnectWithoutFriendInput[]
@@ -4841,6 +4898,13 @@ export namespace Prisma {
     connectOrCreate?: MessageCreateOrConnectWithoutReceiverInput | MessageCreateOrConnectWithoutReceiverInput[]
     createMany?: MessageCreateManyReceiverInputEnvelope
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type ChatUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ChatCreateWithoutUserInput, ChatUncheckedCreateWithoutUserInput> | ChatCreateWithoutUserInput[] | ChatUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChatCreateOrConnectWithoutUserInput | ChatCreateOrConnectWithoutUserInput[]
+    createMany?: ChatCreateManyUserInputEnvelope
+    connect?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
   }
 
   export type ChatUncheckedCreateNestedManyWithoutFriendInput = {
@@ -4886,6 +4950,20 @@ export namespace Prisma {
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
   }
 
+  export type ChatUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ChatCreateWithoutUserInput, ChatUncheckedCreateWithoutUserInput> | ChatCreateWithoutUserInput[] | ChatUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChatCreateOrConnectWithoutUserInput | ChatCreateOrConnectWithoutUserInput[]
+    upsert?: ChatUpsertWithWhereUniqueWithoutUserInput | ChatUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ChatCreateManyUserInputEnvelope
+    set?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
+    disconnect?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
+    delete?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
+    connect?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
+    update?: ChatUpdateWithWhereUniqueWithoutUserInput | ChatUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ChatUpdateManyWithWhereWithoutUserInput | ChatUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ChatScalarWhereInput | ChatScalarWhereInput[]
+  }
+
   export type ChatUpdateManyWithoutFriendNestedInput = {
     create?: XOR<ChatCreateWithoutFriendInput, ChatUncheckedCreateWithoutFriendInput> | ChatCreateWithoutFriendInput[] | ChatUncheckedCreateWithoutFriendInput[]
     connectOrCreate?: ChatCreateOrConnectWithoutFriendInput | ChatCreateOrConnectWithoutFriendInput[]
@@ -4926,6 +5004,20 @@ export namespace Prisma {
     update?: MessageUpdateWithWhereUniqueWithoutReceiverInput | MessageUpdateWithWhereUniqueWithoutReceiverInput[]
     updateMany?: MessageUpdateManyWithWhereWithoutReceiverInput | MessageUpdateManyWithWhereWithoutReceiverInput[]
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type ChatUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ChatCreateWithoutUserInput, ChatUncheckedCreateWithoutUserInput> | ChatCreateWithoutUserInput[] | ChatUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChatCreateOrConnectWithoutUserInput | ChatCreateOrConnectWithoutUserInput[]
+    upsert?: ChatUpsertWithWhereUniqueWithoutUserInput | ChatUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ChatCreateManyUserInputEnvelope
+    set?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
+    disconnect?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
+    delete?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
+    connect?: ChatWhereUniqueInput | ChatWhereUniqueInput[]
+    update?: ChatUpdateWithWhereUniqueWithoutUserInput | ChatUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ChatUpdateManyWithWhereWithoutUserInput | ChatUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ChatScalarWhereInput | ChatScalarWhereInput[]
   }
 
   export type ChatUncheckedUpdateManyWithoutFriendNestedInput = {
@@ -4996,6 +5088,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutChatFriendInput = {
+    create?: XOR<UserCreateWithoutChatFriendInput, UserUncheckedCreateWithoutChatFriendInput>
+    connectOrCreate?: UserCreateOrConnectWithoutChatFriendInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type MessageCreateNestedManyWithoutChatInput = {
     create?: XOR<MessageCreateWithoutChatInput, MessageUncheckedCreateWithoutChatInput> | MessageCreateWithoutChatInput[] | MessageUncheckedCreateWithoutChatInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutChatInput | MessageCreateOrConnectWithoutChatInput[]
@@ -5016,6 +5114,14 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutChatInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutChatInput, UserUpdateWithoutChatInput>, UserUncheckedUpdateWithoutChatInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutChatFriendNestedInput = {
+    create?: XOR<UserCreateWithoutChatFriendInput, UserUncheckedCreateWithoutChatFriendInput>
+    connectOrCreate?: UserCreateOrConnectWithoutChatFriendInput
+    upsert?: UserUpsertWithoutChatFriendInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutChatFriendInput, UserUpdateWithoutChatFriendInput>, UserUncheckedUpdateWithoutChatFriendInput>
   }
 
   export type MessageUpdateManyWithoutChatNestedInput = {
@@ -5211,11 +5317,37 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ChatCreateWithoutFriendInput = {
+  export type ChatCreateWithoutUserInput = {
     id?: string
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    friend: UserCreateNestedOneWithoutChatFriendInput
+    messages?: MessageCreateNestedManyWithoutChatInput
+  }
+
+  export type ChatUncheckedCreateWithoutUserInput = {
+    id?: string
+    friendId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    messages?: MessageUncheckedCreateNestedManyWithoutChatInput
+  }
+
+  export type ChatCreateOrConnectWithoutUserInput = {
+    where: ChatWhereUniqueInput
+    create: XOR<ChatCreateWithoutUserInput, ChatUncheckedCreateWithoutUserInput>
+  }
+
+  export type ChatCreateManyUserInputEnvelope = {
+    data: ChatCreateManyUserInput | ChatCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ChatCreateWithoutFriendInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutChatInput
     messages?: MessageCreateNestedManyWithoutChatInput
   }
 
@@ -5282,6 +5414,33 @@ export namespace Prisma {
     data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutReceiverInput>
   }
 
+  export type ChatUpsertWithWhereUniqueWithoutUserInput = {
+    where: ChatWhereUniqueInput
+    update: XOR<ChatUpdateWithoutUserInput, ChatUncheckedUpdateWithoutUserInput>
+    create: XOR<ChatCreateWithoutUserInput, ChatUncheckedCreateWithoutUserInput>
+  }
+
+  export type ChatUpdateWithWhereUniqueWithoutUserInput = {
+    where: ChatWhereUniqueInput
+    data: XOR<ChatUpdateWithoutUserInput, ChatUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ChatUpdateManyWithWhereWithoutUserInput = {
+    where: ChatScalarWhereInput
+    data: XOR<ChatUpdateManyMutationInput, ChatUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ChatScalarWhereInput = {
+    AND?: ChatScalarWhereInput | ChatScalarWhereInput[]
+    OR?: ChatScalarWhereInput[]
+    NOT?: ChatScalarWhereInput | ChatScalarWhereInput[]
+    id?: StringFilter<"Chat"> | string
+    userId?: StringFilter<"Chat"> | string
+    friendId?: StringFilter<"Chat"> | string
+    createdAt?: DateTimeFilter<"Chat"> | Date | string
+    updatedAt?: DateTimeFilter<"Chat"> | Date | string
+  }
+
   export type ChatUpsertWithWhereUniqueWithoutFriendInput = {
     where: ChatWhereUniqueInput
     update: XOR<ChatUpdateWithoutFriendInput, ChatUncheckedUpdateWithoutFriendInput>
@@ -5298,17 +5457,6 @@ export namespace Prisma {
     data: XOR<ChatUpdateManyMutationInput, ChatUncheckedUpdateManyWithoutFriendInput>
   }
 
-  export type ChatScalarWhereInput = {
-    AND?: ChatScalarWhereInput | ChatScalarWhereInput[]
-    OR?: ChatScalarWhereInput[]
-    NOT?: ChatScalarWhereInput | ChatScalarWhereInput[]
-    id?: StringFilter<"Chat"> | string
-    userId?: StringFilter<"Chat"> | string
-    friendId?: StringFilter<"Chat"> | string
-    createdAt?: DateTimeFilter<"Chat"> | Date | string
-    updatedAt?: DateTimeFilter<"Chat"> | Date | string
-  }
-
   export type UserCreateWithoutSentMessagesInput = {
     id?: string
     firstName: string
@@ -5319,7 +5467,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
-    chat?: ChatCreateNestedManyWithoutFriendInput
+    chat?: ChatCreateNestedManyWithoutUserInput
+    chatFriend?: ChatCreateNestedManyWithoutFriendInput
   }
 
   export type UserUncheckedCreateWithoutSentMessagesInput = {
@@ -5332,7 +5481,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
-    chat?: ChatUncheckedCreateNestedManyWithoutFriendInput
+    chat?: ChatUncheckedCreateNestedManyWithoutUserInput
+    chatFriend?: ChatUncheckedCreateNestedManyWithoutFriendInput
   }
 
   export type UserCreateOrConnectWithoutSentMessagesInput = {
@@ -5350,7 +5500,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
-    chat?: ChatCreateNestedManyWithoutFriendInput
+    chat?: ChatCreateNestedManyWithoutUserInput
+    chatFriend?: ChatCreateNestedManyWithoutFriendInput
   }
 
   export type UserUncheckedCreateWithoutReceivedMessagesInput = {
@@ -5363,7 +5514,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
-    chat?: ChatUncheckedCreateNestedManyWithoutFriendInput
+    chat?: ChatUncheckedCreateNestedManyWithoutUserInput
+    chatFriend?: ChatUncheckedCreateNestedManyWithoutFriendInput
   }
 
   export type UserCreateOrConnectWithoutReceivedMessagesInput = {
@@ -5373,10 +5525,10 @@ export namespace Prisma {
 
   export type ChatCreateWithoutMessagesInput = {
     id?: string
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    friend: UserCreateNestedOneWithoutChatInput
+    user: UserCreateNestedOneWithoutChatInput
+    friend: UserCreateNestedOneWithoutChatFriendInput
   }
 
   export type ChatUncheckedCreateWithoutMessagesInput = {
@@ -5413,7 +5565,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
-    chat?: ChatUpdateManyWithoutFriendNestedInput
+    chat?: ChatUpdateManyWithoutUserNestedInput
+    chatFriend?: ChatUpdateManyWithoutFriendNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentMessagesInput = {
@@ -5426,7 +5579,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
-    chat?: ChatUncheckedUpdateManyWithoutFriendNestedInput
+    chat?: ChatUncheckedUpdateManyWithoutUserNestedInput
+    chatFriend?: ChatUncheckedUpdateManyWithoutFriendNestedInput
   }
 
   export type UserUpsertWithoutReceivedMessagesInput = {
@@ -5450,7 +5604,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
-    chat?: ChatUpdateManyWithoutFriendNestedInput
+    chat?: ChatUpdateManyWithoutUserNestedInput
+    chatFriend?: ChatUpdateManyWithoutFriendNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedMessagesInput = {
@@ -5463,7 +5618,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
-    chat?: ChatUncheckedUpdateManyWithoutFriendNestedInput
+    chat?: ChatUncheckedUpdateManyWithoutUserNestedInput
+    chatFriend?: ChatUncheckedUpdateManyWithoutFriendNestedInput
   }
 
   export type ChatUpsertWithoutMessagesInput = {
@@ -5479,10 +5635,10 @@ export namespace Prisma {
 
   export type ChatUpdateWithoutMessagesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    friend?: UserUpdateOneRequiredWithoutChatNestedInput
+    user?: UserUpdateOneRequiredWithoutChatNestedInput
+    friend?: UserUpdateOneRequiredWithoutChatFriendNestedInput
   }
 
   export type ChatUncheckedUpdateWithoutMessagesInput = {
@@ -5504,6 +5660,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
+    chatFriend?: ChatCreateNestedManyWithoutFriendInput
   }
 
   export type UserUncheckedCreateWithoutChatInput = {
@@ -5517,11 +5674,45 @@ export namespace Prisma {
     updatedAt?: Date | string
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
+    chatFriend?: ChatUncheckedCreateNestedManyWithoutFriendInput
   }
 
   export type UserCreateOrConnectWithoutChatInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutChatInput, UserUncheckedCreateWithoutChatInput>
+  }
+
+  export type UserCreateWithoutChatFriendInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    phone: string
+    password: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
+    chat?: ChatCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutChatFriendInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    phone: string
+    password: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
+    chat?: ChatUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutChatFriendInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutChatFriendInput, UserUncheckedCreateWithoutChatFriendInput>
   }
 
   export type MessageCreateWithoutChatInput = {
@@ -5574,6 +5765,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
+    chatFriend?: ChatUpdateManyWithoutFriendNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatInput = {
@@ -5587,6 +5779,46 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
+    chatFriend?: ChatUncheckedUpdateManyWithoutFriendNestedInput
+  }
+
+  export type UserUpsertWithoutChatFriendInput = {
+    update: XOR<UserUpdateWithoutChatFriendInput, UserUncheckedUpdateWithoutChatFriendInput>
+    create: XOR<UserCreateWithoutChatFriendInput, UserUncheckedCreateWithoutChatFriendInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutChatFriendInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutChatFriendInput, UserUncheckedUpdateWithoutChatFriendInput>
+  }
+
+  export type UserUpdateWithoutChatFriendInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
+    chat?: ChatUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutChatFriendInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
+    chat?: ChatUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageUpsertWithWhereUniqueWithoutChatInput = {
@@ -5621,6 +5853,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     chatId?: string | null
+  }
+
+  export type ChatCreateManyUserInput = {
+    id?: string
+    friendId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ChatCreateManyFriendInput = {
@@ -5684,11 +5923,34 @@ export namespace Prisma {
     chatId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type ChatUpdateWithoutFriendInput = {
+  export type ChatUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    friend?: UserUpdateOneRequiredWithoutChatFriendNestedInput
+    messages?: MessageUpdateManyWithoutChatNestedInput
+  }
+
+  export type ChatUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    friendId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: MessageUncheckedUpdateManyWithoutChatNestedInput
+  }
+
+  export type ChatUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    friendId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChatUpdateWithoutFriendInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutChatNestedInput
     messages?: MessageUpdateManyWithoutChatNestedInput
   }
 

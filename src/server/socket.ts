@@ -36,7 +36,7 @@ io.on("connection", (socket) => {
             where: { chatId: room },
         });
 
-        io.to(room).emit("received-messages", messages);
+        io.to(room).emit("received-messages", messages.reverse());
 
         console.log("message sent");
     });

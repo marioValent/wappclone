@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
                     },
                 },
                 friend: true,
+                user: true,
             },
         });
 

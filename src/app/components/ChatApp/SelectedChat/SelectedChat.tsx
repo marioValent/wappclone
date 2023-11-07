@@ -6,10 +6,11 @@ import React, {
     useState,
 } from "react";
 import Image from "next/image";
-import axios from "axios";
+import socketIOClient from "socket.io-client";
 import AttachDocument from "./AttachDocument";
 import EmojiDrawer from "./EmojiDrawer";
 import Input from "../../shared/Input";
+import { useCurrentUser } from "@/app/hooks/useCurrentUser";
 import closeIcon from "@/../public/closeIcon.svg";
 import emojiIcon from "@/../public/emojiIcon.svg";
 import keyboardVoiceIcon from "@/../public/keyboardVoiceIcon.svg";
@@ -22,14 +23,7 @@ import {
     formatDay,
     formatTime,
 } from "./SelectedChat.utils";
-import {
-    BASE_URL,
-    Chat,
-    ChatDefault,
-    User,
-    dictionary,
-    getToken,
-} from "@/app/common";
+import { Chat, ChatDefault, Message, User, dictionary } from "@/app/common";
 
 interface SelectedChatProps {
     data: Chat | User;
@@ -37,6 +31,10 @@ interface SelectedChatProps {
 
 const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
     function SelectedChat({ data }, ref) {
+        const socket = socketIOClient("https://mario-ws.webmarc.cucuza.com/");
+        const currentUser = useCurrentUser();
+        const [messages, setMessages] = useState<Message[]>([]);
+
         const scrollRef = useRef<HTMLDivElement | null>(null);
         const [messageInputValue, setMessageInputValue] = useState("");
         const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -72,40 +70,30 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             setMessageInputValue(value);
         };
 
-        const handleSendMessage = async () => {
-            if (getContentData() === undefined && messageInputValue) {
-                try {
-                    const chatResponse = await axios.post(
-                        `${BASE_URL}/api/chat/create`,
-                        {
-                            token: getToken(),
-                            friendId: data.id,
-                        }
-                    );
-
-                    const chatData = chatResponse.data.chat;
-                    await axios.post(`${BASE_URL}/api/message/send`, {
-                        senderId: chatData.userId,
-                        receiverId: chatData.friendId,
-                        text: messageInputValue,
-                        chatId: chatData.id,
-                    });
-
-                    setMessageInputValue("");
-                } catch (error) {
-                    throw error;
-                }
-            } else if (messageInputValue) {
-                const data = getContentData();
-                axios.post(`${BASE_URL}/api/message/send`, {
-                    senderId: data.userId,
-                    receiverId: data.friendId,
-                    text: messageInputValue,
-                    chatId: data.id,
-                });
-                setMessageInputValue("");
-            }
+        const joinRoom = () => {
+            socket.emit(
+                "join-room",
+                currentUser?.id === (data as Chat).userId ||
+                    currentUser?.id === (data as Chat).friendId
+                    ? (data as Chat).id
+                    : "another-room"
+            );
         };
+
+        const handleSendMessage = () => {
+            socket.emit(
+                "send-message",
+                currentUser?.id === (data as Chat).userId ||
+                    currentUser?.id === (data as Chat).friendId
+                    ? (data as Chat).id
+                    : "another-room",
+                currentUser?.id,
+                (data as Chat).friendId,
+                messageInputValue
+            );
+            setMessageInputValue("");
+        };
+
         const onEnterDown = async (
             event: React.KeyboardEvent<HTMLInputElement>
         ) => {
@@ -126,11 +114,29 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         };
 
         useEffect(() => {
+            socket.on("connect", joinRoom);
+
+            socket.on("received-messages", (messages) => {
+                console.log("when socket on: ", messages);
+                setMessages(messages);
+            });
+
+            return () => {
+                socket.off("connect", joinRoom);
+                // socket.disconnect();
+            };
+        }, [socket]);
+
+        useEffect(() => {
+            if (isDrawerOpen) setDrawerOpen(false);
+            setMessages(getContentData().messages);
+        }, [data.id]);
+
+        useEffect(() => {
             if (scrollRef.current) {
                 scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
             }
-            if (isDrawerOpen) setDrawerOpen(false);
-        }, [data.id]);
+        }, [messages]);
 
         return (
             <div className="relative z-10 h-full">
@@ -148,66 +154,62 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         className="h-full grid overflow-auto scrollbar z-20"
                         ref={scrollRef}
                     >
-                        {getContentData()?.messages?.length > 0 ? (
+                        {messages.length > 0 ? (
                             <ol className="relative flex flex-col-reverse flex-grow px-16 py-4">
-                                {getContentData()?.messages.map(
-                                    (message, index) => (
-                                        <Fragment key={`fragment-${index}`}>
-                                            <li
-                                                key={index}
-                                                className={`flex my-0.5 self-${
-                                                    message.senderId ===
-                                                    getContentData().userId
-                                                        ? "end"
-                                                        : "start"
-                                                }`}
+                                {messages.map((message, index) => (
+                                    <Fragment key={`fragment-${index}`}>
+                                        <li
+                                            key={index}
+                                            className={`flex my-0.5 self-${
+                                                message.senderId ===
+                                                currentUser?.id
+                                                    ? "end"
+                                                    : "start"
+                                            }`}
+                                        >
+                                            {message.senderId ===
+                                            currentUser?.id ? (
+                                                <>
+                                                    <span className="relative p-1.5 pr-10 rounded-lg rounded-tr-[0] text-sm max-w-md bg-green-msg">
+                                                        {message.text}
+                                                        <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
+                                                            {formatTime(
+                                                                message.createdAt
+                                                            )}
+                                                        </span>
+                                                    </span>
+
+                                                    {displayTailOutSvg()}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {displayTailInSvg()}
+
+                                                    <span className="relative p-1.5 pr-10 rounded-lg rounded-tl-[0] text-sm max-w-md bg-white">
+                                                        {message.text}
+                                                        <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
+                                                            {formatTime(
+                                                                message.createdAt
+                                                            )}
+                                                        </span>
+                                                    </span>
+                                                </>
+                                            )}
+                                        </li>
+                                        {displayDate(
+                                            index,
+                                            index + 1,
+                                            messages
+                                        ) ? (
+                                            <span
+                                                key={`date-${index}`}
+                                                className="bg-white text-sm text-[#54656F] p-2 my-4 rounded-lg z-30 w-fit flex mx-auto"
                                             >
-                                                {message.senderId ===
-                                                getContentData().userId ? (
-                                                    <>
-                                                        <span className="relative p-1.5 pr-10 rounded-lg rounded-tr-[0] text-sm max-w-md bg-green-msg">
-                                                            {message.text}
-                                                            <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
-                                                                {formatTime(
-                                                                    message.createdAt
-                                                                )}
-                                                            </span>
-                                                        </span>
-
-                                                        {displayTailOutSvg()}
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {displayTailInSvg()}
-
-                                                        <span className="relative p-1.5 pr-10 rounded-lg rounded-tl-[0] text-sm max-w-md bg-white">
-                                                            {message.text}
-                                                            <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
-                                                                {formatTime(
-                                                                    message.createdAt
-                                                                )}
-                                                            </span>
-                                                        </span>
-                                                    </>
-                                                )}
-                                            </li>
-                                            {displayDate(
-                                                index,
-                                                index + 1,
-                                                getContentData().messages
-                                            ) ? (
-                                                <span
-                                                    key={`date-${index}`}
-                                                    className="bg-white text-sm text-[#54656F] p-2 my-4 rounded-lg z-30 w-fit flex mx-auto"
-                                                >
-                                                    {formatDay(
-                                                        message.createdAt
-                                                    )}
-                                                </span>
-                                            ) : null}
-                                        </Fragment>
-                                    )
-                                )}
+                                                {formatDay(message.createdAt)}
+                                            </span>
+                                        ) : null}
+                                    </Fragment>
+                                ))}
                             </ol>
                         ) : null}
                     </div>

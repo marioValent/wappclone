@@ -12,6 +12,12 @@ export const ChatDefault = {
         lastName: "",
         chat: [] as Chat[],
     },
+    user: {
+        id: "",
+        firstName: "",
+        lastName: "",
+        chat: [] as Chat[],
+    },
     messages: [{ createdAt: "", receiverId: "", senderId: "", text: "" }],
     userId: "",
 };

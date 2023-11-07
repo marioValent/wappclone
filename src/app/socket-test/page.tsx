@@ -1,8 +1,8 @@
 "use client";
 
-import socketIOClient from "socket.io-client";
 import { useEffect, useState } from "react";
-import useCurrentUser from "../hooks/useCurrentUser";
+import socketIOClient from "socket.io-client";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const chatId = "clo4f8ryc0003qv2s1evxn3xb";
 const currentUserId = "clnsl5ojp0000pubwtsjzwoca";

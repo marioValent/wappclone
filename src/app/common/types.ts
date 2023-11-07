@@ -12,6 +12,7 @@ export type Message = {
 };
 export type Chat = {
     id: string;
+    user: User;
     friend: User;
     friendId: string;
     messages: Message[];

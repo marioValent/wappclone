@@ -9,7 +9,7 @@ import { dictionary } from "@/app/common";
 interface AttachDocumentProps {
     messageInputValue: string;
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleSendMessage: () => Promise<void>;
+    handleSendMessage: () => void;
     onEnterDown: (
         event: React.KeyboardEvent<HTMLInputElement>
     ) => Promise<void>;

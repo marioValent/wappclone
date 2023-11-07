@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { useChats, useUsers } from "@/app/hooks";
+import { useChats, useCurrentUser, useUsers } from "@/app/hooks";
 import { Chat, User } from "@/app/common";
 import loadingIcon from "@/../public/loadingIcon.svg";
 
@@ -23,6 +23,7 @@ const ContentList = ({
 }: ContentListProps) => {
     const { chats, isLoading } = useChats();
     const users = useUsers();
+    const currentUser = useCurrentUser();
 
     const renderContactsList = () => {
         return (
@@ -62,6 +63,8 @@ const ContentList = ({
             </p>
         );
 
+    const isCurrentUser = (id: string) => id === currentUser?.id;
+
     return (
         <div
             id={`content-list-${id}`}
@@ -81,8 +84,10 @@ const ContentList = ({
                                 onClick={() => onSelect(chat)}
                             >
                                 <h2>
-                                    {chat.friend.firstName}{" "}
-                                    {chat.friend.lastName}
+                                    {!isCurrentUser(chat.userId)
+                                        ? `${chat.user.firstName} ${chat.user.lastName}`
+                                        : `${chat.friend.firstName}
+                                    ${chat.friend.lastName}`}
                                 </h2>
                                 <p className="text-sm">
                                     {chat.messages[0]?.text}
