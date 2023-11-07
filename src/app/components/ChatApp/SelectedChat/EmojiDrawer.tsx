@@ -24,6 +24,7 @@ const EmojiDrawer: React.FC<EmojiDrawerProps> = ({
                     showPreview: false,
                 }}
                 suggestedEmojisMode={SuggestionMode.RECENT}
+                height="18rem"
                 width="100%"
                 onEmojiClick={onEmojiClick}
             />

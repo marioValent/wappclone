@@ -7,8 +7,9 @@ import React, {
 } from "react";
 import Image from "next/image";
 import axios from "axios";
+import AttachDocument from "./AttachDocument";
+import EmojiDrawer from "./EmojiDrawer";
 import Input from "../../shared/Input";
-import attachIcon from "@/../public/attachIcon.svg";
 import closeIcon from "@/../public/closeIcon.svg";
 import emojiIcon from "@/../public/emojiIcon.svg";
 import keyboardVoiceIcon from "@/../public/keyboardVoiceIcon.svg";
@@ -29,7 +30,6 @@ import {
     dictionary,
     getToken,
 } from "@/app/common";
-import EmojiDrawer from "./EmojiDrawer";
 
 interface SelectedChatProps {
     data: Chat | User;
@@ -106,7 +106,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                 setMessageInputValue("");
             }
         };
-        const handleKeyPress = async (
+        const onEnterDown = async (
             event: React.KeyboardEvent<HTMLInputElement>
         ) => {
             if (event.key === "Enter") handleSendMessage();
@@ -129,6 +129,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             if (scrollRef.current) {
                 scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
             }
+            if (isDrawerOpen) setDrawerOpen(false);
         }, [data.id]);
 
         return (
@@ -211,12 +212,12 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         ) : null}
                     </div>
 
-                    <div>
+                    <div className="z-30">
                         <EmojiDrawer
                             isDrawerOpen={isDrawerOpen}
                             onEmojiSelect={handleEmojiSelect}
                         />
-                        <div className="relative flex items-center px-4 gap-2 bg-main-gray h-20 z-30">
+                        <div className="flex items-center px-4 gap-2 bg-main-gray h-20">
                             <div className="flex justify-center gap-3 w-[10%]">
                                 {isDrawerOpen ? (
                                     <Image
@@ -233,11 +234,11 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                         onClick={openEmojiDrawer}
                                     />
                                 )}
-                                <Image
-                                    alt="attachIcon-icon"
-                                    className="w-7 cursor-pointer"
-                                    src={attachIcon}
-                                    title="Attach"
+                                <AttachDocument
+                                    messageInputValue={messageInputValue}
+                                    handleInputChange={handleInputChange}
+                                    handleSendMessage={handleSendMessage}
+                                    onEnterDown={onEnterDown}
                                 />
                             </div>
                             <Input
@@ -250,7 +251,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                 }
                                 ref={ref}
                                 value={messageInputValue}
-                                onKeyDown={handleKeyPress}
+                                onKeyDown={onEnterDown}
                                 onChange={handleInputChange}
                             />
                             {messageInputValue ? (
