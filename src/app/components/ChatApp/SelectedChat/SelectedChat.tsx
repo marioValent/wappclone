@@ -27,10 +27,11 @@ import { Chat, ChatDefault, Message, User, dictionary } from "@/app/common";
 
 interface SelectedChatProps {
     data: Chat | User;
+    focusMessageInput: () => void;
 }
 
 const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
-    function SelectedChat({ data }, ref) {
+    function SelectedChat({ data, focusMessageInput }, ref) {
         const socket = socketIOClient("https://mario-ws.webmarc.cucuza.com/");
         const currentUser = useCurrentUser();
         const [messages, setMessages] = useState<Message[]>([]);
@@ -105,6 +106,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         };
         const closeEmojiDrawer = () => {
             setDrawerOpen(false);
+            focusMessageInput();
         };
 
         const handleEmojiSelect = (emoji: string) => {
@@ -238,6 +240,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                 )}
                                 <AttachDocument
                                     messageInputValue={messageInputValue}
+                                    focusMessageInput={focusMessageInput}
                                     handleInputChange={handleInputChange}
                                     handleSendMessage={handleSendMessage}
                                     onEnterDown={onEnterDown}

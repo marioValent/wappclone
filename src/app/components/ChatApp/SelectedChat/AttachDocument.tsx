@@ -1,15 +1,19 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Input from "../../shared/Input";
 import attachIcon from "@/../public/attachIcon.svg";
 import closeIcon from "@/../public/closeIcon.svg";
 import sendArrow from "@/../public/sendArrow.svg";
-import { dictionary } from "@/app/common";
+import { Document, Page, pdfjs } from "react-pdf";
+import AttachMessageInput from "./AttachMessageInput";
+
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 interface AttachDocumentProps {
     messageInputValue: string;
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSendMessage: () => void;
+    focusMessageInput: () => void;
     onEnterDown: (
         event: React.KeyboardEvent<HTMLInputElement>
     ) => Promise<void>;
@@ -19,8 +23,10 @@ const AttachDocument: React.FC<AttachDocumentProps> = ({
     messageInputValue,
     handleInputChange,
     handleSendMessage,
+    focusMessageInput,
     onEnterDown,
 }) => {
+    const [fileFormat, setFileFormat] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [imageDimensions, setImageDimensions] = useState<{
         width: number;
@@ -54,6 +60,13 @@ const AttachDocument: React.FC<AttachDocumentProps> = ({
         if (file) {
             setIsOpen(true);
             setSelectedFile(file);
+
+            const fileType = (file.name.split(".").pop() || "").toLowerCase();
+            if (fileType === "pdf") {
+                setFileFormat("pdf");
+            } else {
+                setFileFormat("image");
+            }
         }
     };
 
@@ -66,6 +79,7 @@ const AttachDocument: React.FC<AttachDocumentProps> = ({
     const handleClose = () => {
         setIsOpen(false);
         setSelectedFile(null);
+        focusMessageInput();
     };
 
     const handleOnClickSendArrow = () => {
@@ -129,30 +143,30 @@ const AttachDocument: React.FC<AttachDocumentProps> = ({
                         <p>{selectedFile.name}</p>
                     </div>
 
-                    <div className="flex h-2/4">
-                        <Image
-                            alt="selected-file"
-                            src={URL.createObjectURL(selectedFile)}
-                            className="min-w-[200px] max-w-2xl object-contain"
-                            height={imageDimensions?.height}
-                            width={imageDimensions?.width}
-                            ref={imageRef}
-                            onLoad={handleImageLoad}
-                        />
+                    <div className="flex h-1/2 w-full justify-center">
+                        {fileFormat === "image" ? (
+                            <Image
+                                alt="selected-file"
+                                src={URL.createObjectURL(selectedFile)}
+                                className="min-w-[200px] max-w-2xl object-contain"
+                                height={imageDimensions?.height}
+                                width={imageDimensions?.width}
+                                ref={imageRef}
+                                onLoad={handleImageLoad}
+                            />
+                        ) : fileFormat === "pdf" ? (
+                            <Document file={selectedFile}>
+                                <Page pageNumber={1} />
+                            </Document>
+                        ) : null}
                     </div>
 
                     <div className="flex w-3/4 gap-8">
-                        <Input
-                            id="send-message-input"
-                            className="input bg-white focus:outline-none p-3"
-                            classNameDiv="w-full"
-                            placeholder={
-                                dictionary.selectedChat.messageInputPlaceholder
-                            }
-                            ref={attachMessageRef}
-                            value={messageInputValue}
-                            onChange={handleInputChange}
-                            onKeyDown={onEnterDown}
+                        <AttachMessageInput
+                            messageInputValue={messageInputValue}
+                            selectedFile={selectedFile}
+                            handleInputChange={handleInputChange}
+                            onEnterDown={onEnterDown}
                         />
                         <div
                             className="flex justify-center cursor-pointer bg-main-green rounded-full w-[60px] h-[50px]"

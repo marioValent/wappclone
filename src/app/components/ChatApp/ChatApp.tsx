@@ -22,9 +22,13 @@ const ChatApp: React.FC = () => {
         setSelectedChat(data);
     };
 
+    const focusMessageInput = () => {
+        messageInputRef.current?.focus();
+    };
+
     useEffect(() => {
         if (selectedChat) {
-            messageInputRef.current?.focus();
+            focusMessageInput();
         }
     }, [selectedChat]);
 
@@ -40,7 +44,11 @@ const ChatApp: React.FC = () => {
             </div>
             <div className="w-2/3 bg-main-gray border-l border-main-gray-deeper">
                 {selectedChat ? (
-                    <SelectedChat ref={messageInputRef} data={selectedChat} />
+                    <SelectedChat
+                        data={selectedChat}
+                        ref={messageInputRef}
+                        focusMessageInput={focusMessageInput}
+                    />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full space-y-10">
                         <Image src={chatImg} alt="Profile Image" />
