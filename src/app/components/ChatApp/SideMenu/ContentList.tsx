@@ -1,8 +1,15 @@
 import React from "react";
 import Image from "next/image";
 import { useChats, useCurrentUser, useUsers } from "@/app/hooks";
-import { Chat, User } from "@/app/common";
 import loadingIcon from "@/../public/loadingIcon.svg";
+import {
+    Chat,
+    User,
+    isCurrentUser,
+    formatDay,
+    formatTime,
+    isAfterMidnight,
+} from "@/app/common";
 
 interface ContentListProps {
     id: string;
@@ -63,8 +70,6 @@ const ContentList = ({
             </p>
         );
 
-    const isCurrentUser = (id: string) => id === currentUser?.id;
-
     return (
         <div
             id={`content-list-${id}`}
@@ -78,21 +83,37 @@ const ContentList = ({
                 <ul>
                     {(searchedChats ? searchedChats : chats)?.map(
                         (chat, index) => (
-                            <li
+                            <div
                                 key={index}
                                 className="w-full p-3 pl-7 border-t border-main-gray text-left cursor-pointer hover:bg-main-gray"
                                 onClick={() => onSelect(chat)}
                             >
-                                <h2>
-                                    {!isCurrentUser(chat.userId)
-                                        ? `${chat.user.firstName} ${chat.user.lastName}`
-                                        : `${chat.friend.firstName}
+                                <div className="flex justify-between items-center">
+                                    <h2>
+                                        {!isCurrentUser(
+                                            chat.userId,
+                                            currentUser?.id || ""
+                                        )
+                                            ? `${chat.user.firstName} ${chat.user.lastName}`
+                                            : `${chat.friend.firstName}
                                     ${chat.friend.lastName}`}
-                                </h2>
+                                    </h2>
+                                    <span className="text-xs text-[#667781]">
+                                        {isAfterMidnight(
+                                            chat.messages[0]?.createdAt
+                                        )
+                                            ? formatTime(
+                                                  chat.messages[0]?.createdAt
+                                              )
+                                            : formatDay(
+                                                  chat.messages[0]?.createdAt
+                                              )}
+                                    </span>
+                                </div>
                                 <p className="text-sm">
                                     {chat.messages[0]?.text}
                                 </p>
-                            </li>
+                            </div>
                         )
                     )}
                 </ul>

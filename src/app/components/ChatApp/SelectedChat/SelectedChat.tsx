@@ -20,10 +20,16 @@ import {
     displayDate,
     displayTailInSvg,
     displayTailOutSvg,
+} from "./SelectedChat.utils";
+import {
+    Chat,
+    ChatDefault,
+    Message,
+    User,
+    dictionary,
     formatDay,
     formatTime,
-} from "./SelectedChat.utils";
-import { Chat, ChatDefault, Message, User, dictionary } from "@/app/common";
+} from "@/app/common";
 
 interface SelectedChatProps {
     data: Chat | User;

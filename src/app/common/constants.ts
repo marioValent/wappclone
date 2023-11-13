@@ -1,6 +1,8 @@
 import { Chat } from "./types";
 
 export const BASE_URL = "https://mario.webmarc.cucuza.com";
+export const isCurrentUser = (id: string, currentUser: string) =>
+    id === currentUser;
 
 export const ChatDefault = {
     id: "",
