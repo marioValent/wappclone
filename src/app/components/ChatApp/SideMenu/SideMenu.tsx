@@ -22,7 +22,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
     };
 
     const searchedChatsData = (listOfChats: Array<Chat>) => {
-        setSearchedChats(listOfChats);
+        const reversedMessagesChats = listOfChats?.map((chat) => {
+            return { ...chat, messages: chat.messages.reverse() };
+        });
+        setSearchedChats(reversedMessagesChats);
     };
 
     const searchedChatListUsersData = (listOfUsers: Array<User>) => {

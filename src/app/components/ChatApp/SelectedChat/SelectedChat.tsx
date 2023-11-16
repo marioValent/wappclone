@@ -19,11 +19,13 @@ import {
     displayDate,
     displayTailInSvg,
     displayTailOutSvg,
+    getContentData,
+    getNavbarData,
+    renderMessage,
 } from "./SelectedChat.utils";
 import {
     BASE_URL,
     Chat,
-    ChatDefault,
     Message,
     User,
     dictionary,
@@ -49,34 +51,6 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         const [messages, setMessages] = useState<Message[]>([]);
         const [messageInputValue, setMessageInputValue] = useState("");
 
-        const isUser = (data: Chat | User): data is User => {
-            return (data as User).firstName !== undefined;
-        };
-
-        const isChat = (data: Chat | User): data is Chat => {
-            return (data as Chat).friend !== undefined;
-        };
-
-        const getNavbarData = () => {
-            if (isUser(data)) {
-                return `${data.firstName} ${data.lastName}`;
-            } else if (isChat(data)) {
-                return currentUser?.id === data.userId
-                    ? `${data.friend.firstName} ${data.friend.lastName}`
-                    : `${data.user.firstName} ${data.user.lastName}`;
-            }
-            return;
-        };
-
-        const getContentData = (): Chat => {
-            if (isUser(data)) {
-                return data.chat[0];
-            } else if (isChat(data)) {
-                return data;
-            }
-            return ChatDefault;
-        };
-
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             const { value } = e.target;
             setMessageInputValue(value);
@@ -87,7 +61,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         };
 
         const handleSendMessage = async () => {
-            if (getContentData() === undefined && messageInputValue) {
+            if (getContentData(data) === undefined && messageInputValue) {
                 try {
                     const chatResponse = await axios.post(
                         `${BASE_URL}/api/chat/create`,
@@ -170,7 +144,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         useEffect(() => {
             joinRoom((data as Chat).id);
             if (isDrawerOpen) setDrawerOpen(false);
-            setMessages(getContentData()?.messages);
+            setMessages(getContentData(data)?.messages);
         }, [data.id]);
 
         useEffect(() => {
@@ -189,7 +163,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                             alt="profile icon"
                             style={{ width: "3rem", height: "3rem" }}
                         />
-                        <h2>{getNavbarData()}</h2>
+                        <h2>{getNavbarData(data, currentUser)}</h2>
                     </div>
                     <div
                         className="h-full grid overflow-auto scrollbar z-20"
@@ -211,8 +185,8 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                             {message.senderId ===
                                             currentUser?.id ? (
                                                 <>
-                                                    <span className="relative p-1.5 pr-10 rounded-lg rounded-tr-[0] text-sm max-w-md bg-green-msg">
-                                                        {message.text}
+                                                    <span className="relative bg-green-msg p-1.5 pr-10 rounded-lg rounded-tr-[0] text-sm max-w-md overflow-hidden overflow-wrap break-all">
+                                                        {renderMessage(message)}
                                                         <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
                                                             {formatTime(
                                                                 message.createdAt
@@ -226,8 +200,8 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                                 <>
                                                     {displayTailInSvg()}
 
-                                                    <span className="relative p-1.5 pr-10 rounded-lg rounded-tl-[0] text-sm max-w-md bg-white">
-                                                        {message.text}
+                                                    <span className="relative bg-white p-1.5 pr-10 rounded-lg rounded-tl-[0] text-sm max-w-md overflow-hidden overflow-wrap break-all">
+                                                        {renderMessage(message)}
                                                         <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
                                                             {formatTime(
                                                                 message.createdAt

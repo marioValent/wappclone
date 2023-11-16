@@ -1,4 +1,4 @@
-import { Message } from "@/app/common";
+import { Chat, ChatDefault, Message, User } from "@/app/common";
 import { formatDay } from "@/app/common/dateHelpers";
 
 export const displayTailInSvg = () => {
@@ -63,4 +63,57 @@ export const displayDate = (
     }
 
     return false;
+};
+
+const isUser = (data: Chat | User): data is User => {
+    return (data as User).firstName !== undefined;
+};
+
+const isChat = (data: Chat | User): data is Chat => {
+    return (data as Chat).friend !== undefined;
+};
+
+export const getNavbarData = (data: Chat | User, currentUser: User | null) => {
+    if (isUser(data)) {
+        return `${data.firstName} ${data.lastName}`;
+    } else if (isChat(data)) {
+        return currentUser?.id === data.userId
+            ? `${data.friend.firstName} ${data.friend.lastName}`
+            : `${data.user.firstName} ${data.user.lastName}`;
+    }
+    return;
+};
+
+export const getContentData = (data: Chat | User): Chat => {
+    if (isUser(data)) {
+        return data.chat[0];
+    } else if (isChat(data)) {
+        return data;
+    }
+    return ChatDefault;
+};
+
+export const renderMessage = (message: Message) => {
+    const urlRegex = /(https?:\/\/\S+)/g;
+    const parts = message.text.split(urlRegex);
+    return (
+        <>
+            {parts.map((part, index) => {
+                if (urlRegex.test(part)) {
+                    return (
+                        <a
+                            key={index}
+                            href={part}
+                            target="_blank"
+                            className="text-[#027eb5] hover:underline"
+                        >
+                            {part}
+                        </a>
+                    );
+                } else {
+                    return <span key={index}>{part}</span>;
+                }
+            })}
+        </>
+    );
 };
