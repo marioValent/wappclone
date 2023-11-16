@@ -3,6 +3,7 @@ export type User = {
     firstName: string;
     lastName: string;
     chat: Chat[];
+    chatFriend: Chat[];
 };
 export type Message = {
     createdAt: string;

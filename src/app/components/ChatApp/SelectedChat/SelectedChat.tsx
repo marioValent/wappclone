@@ -6,11 +6,10 @@ import React, {
     useState,
 } from "react";
 import Image from "next/image";
-import socketIOClient from "socket.io-client";
 import AttachDocument from "./AttachDocument";
 import EmojiDrawer from "./EmojiDrawer";
 import Input from "../../shared/Input";
-import { useCurrentUser } from "@/app/hooks/useCurrentUser";
+import { useCurrentUser, useSocket } from "@/app/hooks";
 import closeIcon from "@/../public/closeIcon.svg";
 import emojiIcon from "@/../public/emojiIcon.svg";
 import keyboardVoiceIcon from "@/../public/keyboardVoiceIcon.svg";
@@ -22,6 +21,7 @@ import {
     displayTailOutSvg,
 } from "./SelectedChat.utils";
 import {
+    BASE_URL,
     Chat,
     ChatDefault,
     Message,
@@ -29,22 +29,25 @@ import {
     dictionary,
     formatDay,
     formatTime,
+    getToken,
+    isCurrentUser,
 } from "@/app/common";
-
+import axios from "axios";
 interface SelectedChatProps {
     data: Chat | User;
     focusMessageInput: () => void;
+    setSelectedChat: React.Dispatch<React.SetStateAction<Chat | User | null>>;
 }
 
 const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
-    function SelectedChat({ data, focusMessageInput }, ref) {
-        const socket = socketIOClient("https://mario-ws.webmarc.cucuza.com/");
-        const currentUser = useCurrentUser();
-        const [messages, setMessages] = useState<Message[]>([]);
-
+    function SelectedChat({ data, focusMessageInput, setSelectedChat }, ref) {
         const scrollRef = useRef<HTMLDivElement | null>(null);
-        const [messageInputValue, setMessageInputValue] = useState("");
+        const currentUser = useCurrentUser();
+        const socket = useSocket();
+
         const [isDrawerOpen, setDrawerOpen] = useState(false);
+        const [messages, setMessages] = useState<Message[]>([]);
+        const [messageInputValue, setMessageInputValue] = useState("");
 
         const isUser = (data: Chat | User): data is User => {
             return (data as User).firstName !== undefined;
@@ -58,7 +61,9 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             if (isUser(data)) {
                 return `${data.firstName} ${data.lastName}`;
             } else if (isChat(data)) {
-                return `${data.friend.firstName} ${data.friend.lastName}`;
+                return currentUser?.id === data.userId
+                    ? `${data.friend.firstName} ${data.friend.lastName}`
+                    : `${data.user.firstName} ${data.user.lastName}`;
             }
             return;
         };
@@ -77,28 +82,50 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             setMessageInputValue(value);
         };
 
-        const joinRoom = () => {
-            socket.emit(
-                "join-room",
-                currentUser?.id === (data as Chat).userId ||
-                    currentUser?.id === (data as Chat).friendId
-                    ? (data as Chat).id
-                    : "another-room"
-            );
+        const joinRoom = (id: string) => {
+            socket.emit("join-room", id);
         };
 
-        const handleSendMessage = () => {
-            socket.emit(
-                "send-message",
-                currentUser?.id === (data as Chat).userId ||
-                    currentUser?.id === (data as Chat).friendId
-                    ? (data as Chat).id
-                    : "another-room",
-                currentUser?.id,
-                (data as Chat).friendId,
-                messageInputValue
-            );
-            setMessageInputValue("");
+        const handleSendMessage = async () => {
+            if (getContentData() === undefined && messageInputValue) {
+                try {
+                    const chatResponse = await axios.post(
+                        `${BASE_URL}/api/chat/create`,
+                        {
+                            token: getToken(),
+                            friendId: data.id,
+                        }
+                    );
+                    const chatData = chatResponse.data.chat;
+
+                    joinRoom(chatData.id);
+
+                    socket.emit(
+                        "send-message",
+                        chatData.id,
+                        chatData.userId,
+                        !isCurrentUser(chatData.userId, currentUser?.id || "")
+                            ? chatData.userId
+                            : chatData.friendId,
+                        messageInputValue
+                    );
+                    setSelectedChat(chatData);
+                    setMessageInputValue("");
+                } catch (error) {
+                    throw error;
+                }
+            } else if (messageInputValue) {
+                socket.emit(
+                    "send-message",
+                    data.id,
+                    currentUser?.id,
+                    !isCurrentUser((data as Chat).userId, currentUser?.id || "")
+                        ? (data as Chat).userId
+                        : (data as Chat).friendId,
+                    messageInputValue
+                );
+                setMessageInputValue("");
+            }
         };
 
         const onEnterDown = async (
@@ -112,7 +139,6 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         };
         const closeEmojiDrawer = () => {
             setDrawerOpen(false);
-            focusMessageInput();
         };
 
         const handleEmojiSelect = (emoji: string) => {
@@ -122,22 +148,29 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         };
 
         useEffect(() => {
-            socket.on("connect", joinRoom);
+            const handleConnect = () => {
+                joinRoom(data.id);
+            };
 
-            socket.on("received-messages", (messages) => {
-                console.log("when socket on: ", messages);
+            const handleReceivedMessage = (
+                messages: React.SetStateAction<Message[]>
+            ) => {
                 setMessages(messages);
-            });
+            };
+
+            socket.on("connect", handleConnect);
+            socket.on("received-messages", handleReceivedMessage);
 
             return () => {
-                socket.off("connect", joinRoom);
-                // socket.disconnect();
+                socket.off("connect", handleConnect);
+                socket.off("received-messages", handleReceivedMessage);
             };
         }, [socket]);
 
         useEffect(() => {
+            joinRoom((data as Chat).id);
             if (isDrawerOpen) setDrawerOpen(false);
-            setMessages(getContentData().messages);
+            setMessages(getContentData()?.messages);
         }, [data.id]);
 
         useEffect(() => {
@@ -162,7 +195,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         className="h-full grid overflow-auto scrollbar z-20"
                         ref={scrollRef}
                     >
-                        {messages.length > 0 ? (
+                        {messages?.length > 0 ? (
                             <ol className="relative flex flex-col-reverse flex-grow px-16 py-4">
                                 {messages.map((message, index) => (
                                     <Fragment key={`fragment-${index}`}>

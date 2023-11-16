@@ -14,6 +14,8 @@ export async function POST(request: NextRequest) {
             },
             include: {
                 messages: true,
+                user: true,
+                friend: true,
             },
         });
 

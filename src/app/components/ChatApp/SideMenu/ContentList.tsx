@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
-import { useChats, useCurrentUser, useUsers } from "@/app/hooks";
+import { useChats, useCurrentUser, useSocket, useUsers } from "@/app/hooks";
 import loadingIcon from "@/../public/loadingIcon.svg";
 import {
     Chat,
@@ -28,9 +28,28 @@ const ContentList = ({
     title,
     onSelect,
 }: ContentListProps) => {
-    const { chats, isLoading } = useChats();
+    const socket = useSocket();
+    const { chats, isLoading, getChats } = useChats();
     const users = useUsers();
     const currentUser = useCurrentUser();
+
+    const joinPersonalRoom = (userId: string | undefined) => {
+        if (userId) socket.emit("join-personal-room", currentUser?.id);
+    };
+
+    useEffect(() => {
+        joinPersonalRoom(currentUser?.id);
+
+        const handleReceivedChatList = () => {
+            getChats();
+        };
+
+        socket.on("received-chat-list", handleReceivedChatList);
+
+        return () => {
+            socket.off("received-chat-list", handleReceivedChatList);
+        };
+    }, [socket, JSON.stringify(currentUser)]);
 
     const renderContactsList = () => {
         return (
@@ -43,7 +62,33 @@ const ContentList = ({
                                 key={index}
                                 className="w-full p-3 pl-7 border-t border-main-gray text-left cursor-pointer hover:bg-main-gray"
                                 onClick={() => {
-                                    onSelect(user);
+                                    const foundChat = user.chat.find(
+                                        (chat) =>
+                                            chat.userId === user.id &&
+                                            chat.friendId === currentUser?.id
+                                    );
+                                    const foundChatFriend =
+                                        user.chatFriend.find(
+                                            (chat) =>
+                                                chat.userId ===
+                                                    currentUser?.id &&
+                                                chat.friendId === user.id
+                                        );
+
+                                    if (foundChat) {
+                                        onSelect(foundChat);
+                                        return;
+                                    }
+                                    if (foundChatFriend) {
+                                        onSelect(foundChatFriend);
+                                        return;
+                                    }
+
+                                    onSelect({
+                                        ...user,
+                                        chat: [],
+                                        chatFriend: [],
+                                    });
                                 }}
                             >
                                 {user.firstName} {user.lastName}
@@ -94,7 +139,7 @@ const ContentList = ({
                                             chat.userId,
                                             currentUser?.id || ""
                                         )
-                                            ? `${chat.user.firstName} ${chat.user.lastName}`
+                                            ? `${chat.user?.firstName} ${chat.user?.lastName}`
                                             : `${chat.friend.firstName}
                                     ${chat.friend.lastName}`}
                                     </h2>

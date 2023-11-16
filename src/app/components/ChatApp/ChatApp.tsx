@@ -48,6 +48,7 @@ const ChatApp: React.FC = () => {
                         data={selectedChat}
                         ref={messageInputRef}
                         focusMessageInput={focusMessageInput}
+                        setSelectedChat={setSelectedChat}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full space-y-10">

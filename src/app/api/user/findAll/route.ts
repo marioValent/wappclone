@@ -22,7 +22,36 @@ export async function POST(request: NextRequest) {
                             },
                         ],
                     },
-                    include: { messages: true },
+                    include: {
+                        messages: {
+                            orderBy: {
+                                createdAt: "desc",
+                            },
+                        },
+                        user: true,
+                        friend: true,
+                    },
+                },
+                chatFriend: {
+                    where: {
+                        OR: [
+                            {
+                                userId: id,
+                            },
+                            {
+                                friendId: id,
+                            },
+                        ],
+                    },
+                    include: {
+                        messages: {
+                            orderBy: {
+                                createdAt: "desc",
+                            },
+                        },
+                        user: true,
+                        friend: true,
+                    },
                 },
             },
         });

@@ -15,30 +15,47 @@ const io = socketIO(server, {
 });
 
 io.on("connection", (socket) => {
+    console.log(socket.client.conn.server.clientsCount + " users connected");
     socket.on("join-room", (room) => {
         console.log("room joined");
         socket.join(room);
     });
 
+    socket.on("join-personal-room", (room) => {
+        console.log(room);
+        if (room) {
+            console.log("personal-room joined", room);
+            socket.join(room);
+        }
+    });
+
     socket.on("send-message", async (room, senderId, receiverId, text) => {
-        console.log("sending message...");
+        try {
+            console.log("sending message...", room);
+            console.log(receiverId);
 
-        await db.message.create({
-            data: {
-                senderId,
-                receiverId,
-                text: text,
-                chatId: room,
-            },
-        });
+            if (senderId) {
+                await db.message.create({
+                    data: {
+                        senderId,
+                        receiverId,
+                        text: text,
+                        chatId: room,
+                    },
+                });
+            }
 
-        const messages = await db.message.findMany({
-            where: { chatId: room },
-        });
+            const messages = await db.message.findMany({
+                where: { chatId: room },
+            });
 
-        io.to(room).emit("received-messages", messages.reverse());
+            io.to(room).emit("received-messages", messages.reverse());
+            io.to(senderId).to(receiverId).emit("received-chat-list", []);
 
-        console.log("message sent");
+            console.log("message sent");
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
     });
 });
 

@@ -27,6 +27,9 @@ export async function POST(request: NextRequest) {
                 friend: true,
                 user: true,
             },
+            orderBy: {
+                createdAt: "desc",
+            },
         });
 
         return NextResponse.json({

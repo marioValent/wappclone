@@ -56,7 +56,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
                     title="CONTACTS ON WAPPCLONE"
                     isMain={false}
                     searchedUsers={searchedDrawerUsers}
-                    onSelect={onSelect}
+                    onSelect={(data) => {
+                        onSelect(data);
+                        closeDrawer();
+                    }}
                 />
             </Drawer>
             <SearchBar

@@ -31,5 +31,6 @@ export const useChats = () => {
     return {
         chats,
         isLoading,
+        getChats,
     };
 };
