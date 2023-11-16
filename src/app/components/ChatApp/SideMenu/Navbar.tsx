@@ -6,6 +6,7 @@ import addConvIcon from "@/../public/addConv.svg";
 import logoutIcon from "@/../public/logoutIcon.svg";
 import myProfileIcon from "@/../public/myProfile.svg";
 import { deleteToken } from "@/app/common";
+import { useCurrentUser } from "@/app/hooks";
 
 interface NavBarProps {
     openDrawer: () => void;
@@ -13,6 +14,7 @@ interface NavBarProps {
 
 const Navbar = ({ openDrawer }: NavBarProps) => {
     const router = useRouter();
+    const user = useCurrentUser();
 
     const logout = () => {
         deleteToken();
@@ -21,12 +23,17 @@ const Navbar = ({ openDrawer }: NavBarProps) => {
 
     return (
         <div className="flex justify-between bg-main-gray px-2 py-1">
-            <Image
-                alt="profile icon"
-                src={myProfileIcon}
-                style={{ width: "3rem", height: "3rem" }}
-                title="My profile"
-            />
+            <div className="flex gap-2 items-center">
+                <Image
+                    alt="profile icon"
+                    src={myProfileIcon}
+                    style={{ width: "3rem", height: "3rem" }}
+                    title="My profile"
+                />
+                <h4>
+                    {user?.firstName} {user?.lastName}
+                </h4>
+            </div>
             <div className="flex items-center gap-3">
                 <Button isIcon onClick={openDrawer} title="New chat">
                     <Image src={addConvIcon} alt="add conversation icon" />

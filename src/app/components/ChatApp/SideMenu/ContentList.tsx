@@ -37,6 +37,32 @@ const ContentList = ({
         if (userId) socket.emit("join-personal-room", currentUser?.id);
     };
 
+    const handleClickContact = (user: User) => {
+        const foundChat = user.chat.find(
+            (chat) =>
+                chat.userId === user.id && chat.friendId === currentUser?.id
+        );
+        const foundChatFriend = user.chatFriend.find(
+            (chat) =>
+                chat.userId === currentUser?.id && chat.friendId === user.id
+        );
+
+        if (foundChat) {
+            onSelect(foundChat);
+            return;
+        }
+        if (foundChatFriend) {
+            onSelect(foundChatFriend);
+            return;
+        }
+
+        onSelect({
+            ...user,
+            chat: [],
+            chatFriend: [],
+        });
+    };
+
     useEffect(() => {
         joinPersonalRoom(currentUser?.id);
 
@@ -61,35 +87,7 @@ const ContentList = ({
                             <li
                                 key={index}
                                 className="w-full p-3 pl-7 border-t border-main-gray text-left cursor-pointer hover:bg-main-gray"
-                                onClick={() => {
-                                    const foundChat = user.chat.find(
-                                        (chat) =>
-                                            chat.userId === user.id &&
-                                            chat.friendId === currentUser?.id
-                                    );
-                                    const foundChatFriend =
-                                        user.chatFriend.find(
-                                            (chat) =>
-                                                chat.userId ===
-                                                    currentUser?.id &&
-                                                chat.friendId === user.id
-                                        );
-
-                                    if (foundChat) {
-                                        onSelect(foundChat);
-                                        return;
-                                    }
-                                    if (foundChatFriend) {
-                                        onSelect(foundChatFriend);
-                                        return;
-                                    }
-
-                                    onSelect({
-                                        ...user,
-                                        chat: [],
-                                        chatFriend: [],
-                                    });
-                                }}
+                                onClick={() => handleClickContact(user)}
                             >
                                 {user.firstName} {user.lastName}
                             </li>
