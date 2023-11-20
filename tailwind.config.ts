@@ -28,8 +28,10 @@ const config: Config = {
                 "dark-gray": "#8696a0",
                 "app-gray": "#eae6df",
                 "app-gray-deeper": "#d1d7db",
+                "gray-char": "#667781",
                 "main-green-hover": "#017561",
                 "chat-panel": "#efeae2",
+                "blue-link": "#027eb5",
             },
             filter: {
                 "color-white": "brightness(0) invert(1)",

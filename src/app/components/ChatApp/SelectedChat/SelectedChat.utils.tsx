@@ -92,28 +92,3 @@ export const getContentData = (data: Chat | User): Chat => {
     }
     return ChatDefault;
 };
-
-export const renderMessage = (message: Message) => {
-    const urlRegex = /(https?:\/\/\S+)/g;
-    const parts = message.text.split(urlRegex);
-    return (
-        <>
-            {parts.map((part, index) => {
-                if (urlRegex.test(part)) {
-                    return (
-                        <a
-                            key={index}
-                            href={part}
-                            target="_blank"
-                            className="text-[#027eb5] hover:underline"
-                        >
-                            {part}
-                        </a>
-                    );
-                } else {
-                    return <span key={index}>{part}</span>;
-                }
-            })}
-        </>
-    );
-};

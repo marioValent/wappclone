@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, forwardRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import axios from "axios";
+import Input from "@/app/components/shared/Input";
 import searchIcon from "@/../public/searchIcon.svg";
 import arrowBack from "@/../public/arrowBack.svg";
 import { BASE_URL, Chat, User, dictionary } from "@/app/common";
-import Image from "next/image";
-import Input from "@/app/components/shared/Input";
 
 interface SearchBarProps {
     id: string;

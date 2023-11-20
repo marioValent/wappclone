@@ -14,11 +14,7 @@ export const useCurrentUser = () => {
                 }),
             });
 
-            console.log("inside fetch user");
-
             const json = await res.json();
-
-            console.log("json", json);
 
             setUser(json.user);
         };

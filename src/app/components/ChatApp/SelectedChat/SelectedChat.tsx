@@ -9,6 +9,7 @@ import Image from "next/image";
 import AttachDocument from "./AttachDocument";
 import EmojiDrawer from "./EmojiDrawer";
 import Input from "../../shared/Input";
+import MessageText from "./MessageText";
 import { useCurrentUser, useSocket } from "@/app/hooks";
 import closeIcon from "@/../public/closeIcon.svg";
 import emojiIcon from "@/../public/emojiIcon.svg";
@@ -21,7 +22,6 @@ import {
     displayTailOutSvg,
     getContentData,
     getNavbarData,
-    renderMessage,
 } from "./SelectedChat.utils";
 import {
     BASE_URL,
@@ -30,7 +30,6 @@ import {
     User,
     dictionary,
     formatDay,
-    formatTime,
     getToken,
     isCurrentUser,
 } from "@/app/common";
@@ -42,7 +41,7 @@ interface SelectedChatProps {
 }
 
 const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
-    function SelectedChat({ data, focusMessageInput, setSelectedChat }, ref) {
+    ({ data, focusMessageInput, setSelectedChat }, ref) => {
         const scrollRef = useRef<HTMLDivElement | null>(null);
         const currentUser = useCurrentUser();
         const socket = useSocket();
@@ -185,29 +184,22 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                             {message.senderId ===
                                             currentUser?.id ? (
                                                 <>
-                                                    <span className="relative bg-green-msg p-1.5 pr-10 rounded-lg rounded-tr-[0] text-sm max-w-md overflow-hidden overflow-wrap break-all">
-                                                        {renderMessage(message)}
-                                                        <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
-                                                            {formatTime(
-                                                                message.createdAt
-                                                            )}
-                                                        </span>
-                                                    </span>
-
+                                                    <MessageText
+                                                        data={data}
+                                                        message={message}
+                                                        senderClass="bg-green-msg rounded-tr-[0]"
+                                                    />
                                                     {displayTailOutSvg()}
                                                 </>
                                             ) : (
                                                 <>
                                                     {displayTailInSvg()}
 
-                                                    <span className="relative bg-white p-1.5 pr-10 rounded-lg rounded-tl-[0] text-sm max-w-md overflow-hidden overflow-wrap break-all">
-                                                        {renderMessage(message)}
-                                                        <span className="absolute bottom-0 right-2 text-[10px] text-[#667781]">
-                                                            {formatTime(
-                                                                message.createdAt
-                                                            )}
-                                                        </span>
-                                                    </span>
+                                                    <MessageText
+                                                        data={data}
+                                                        message={message}
+                                                        receiverClass="bg-white rounded-tl-[0]"
+                                                    />
                                                 </>
                                             )}
                                         </li>

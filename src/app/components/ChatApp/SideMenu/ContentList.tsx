@@ -141,7 +141,7 @@ const ContentList = ({
                                             : `${chat.friend.firstName}
                                     ${chat.friend.lastName}`}
                                     </h2>
-                                    <span className="text-xs text-[#667781]">
+                                    <span className="text-xs text-gray-char">
                                         {isAfterMidnight(
                                             chat.messages[0]?.createdAt
                                         )
@@ -153,7 +153,7 @@ const ContentList = ({
                                               )}
                                     </span>
                                 </div>
-                                <p className="text-sm">
+                                <p className="text-sm text-gray-char overflow-hidden text-ellipsis whitespace-nowrap">
                                     {chat.messages[0]?.text}
                                 </p>
                             </div>
