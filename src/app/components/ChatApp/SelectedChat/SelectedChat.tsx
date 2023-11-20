@@ -10,6 +10,7 @@ import AttachDocument from "./AttachDocument";
 import EmojiDrawer from "./EmojiDrawer";
 import Input from "../../shared/Input";
 import MessageText from "./MessageText";
+import Spinner from "../../shared/Spinner";
 import { useCurrentUser, useSocket } from "@/app/hooks";
 import closeIcon from "@/../public/closeIcon.svg";
 import emojiIcon from "@/../public/emojiIcon.svg";
@@ -43,7 +44,7 @@ interface SelectedChatProps {
 const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
     ({ data, focusMessageInput, setSelectedChat }, ref) => {
         const scrollRef = useRef<HTMLDivElement | null>(null);
-        const currentUser = useCurrentUser();
+        const { currentUser, isLoading } = useCurrentUser();
         const socket = useSocket();
 
         const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -150,7 +151,9 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             if (scrollRef.current) {
                 scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
             }
-        }, [messages]);
+        }, [messages, isLoading]);
+
+        if (isLoading) return <Spinner />;
 
         return (
             <div className="relative z-10 h-full">

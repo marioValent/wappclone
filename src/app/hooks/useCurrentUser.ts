@@ -1,26 +1,35 @@
 import { useEffect, useState } from "react";
-import { User } from "../common";
+import { BASE_URL, User } from "../common";
 import { getToken } from "../common";
+import axios from "axios";
 
 export const useCurrentUser = () => {
-    const [user, setUser] = useState<User | null>(null);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const getCurrentUser = async () => {
+        try {
+            axios
+                .post(`${BASE_URL}/api/user/findOne`, {
+                    token: getToken(),
+                })
+                .then((response) => {
+                    setCurrentUser(response.data.user);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        } catch (error) {
+            throw error;
+        }
+    };
 
     useEffect(() => {
-        const fetchUser = async () => {
-            const res = await fetch("/api/user/findOne", {
-                method: "POST",
-                body: JSON.stringify({
-                    token: getToken(),
-                }),
-            });
-
-            const json = await res.json();
-
-            setUser(json.user);
-        };
-
-        fetchUser();
+        getCurrentUser();
     }, []);
 
-    return user;
+    return {
+        currentUser,
+        isLoading,
+    };
 };

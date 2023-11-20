@@ -14,7 +14,7 @@ interface NavBarProps {
 
 const Navbar = ({ openDrawer }: NavBarProps) => {
     const router = useRouter();
-    const user = useCurrentUser();
+    const { currentUser } = useCurrentUser();
 
     const logout = () => {
         deleteToken();
@@ -31,7 +31,7 @@ const Navbar = ({ openDrawer }: NavBarProps) => {
                     title="My profile"
                 />
                 <h4>
-                    {user?.firstName} {user?.lastName}
+                    {currentUser?.firstName} {currentUser?.lastName}
                 </h4>
             </div>
             <div className="flex items-center gap-3">

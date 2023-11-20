@@ -22,7 +22,7 @@ const MessageText: React.FC<MessageTextProps> = ({
     const [isShowButtonVisible, setIsShowButtonVisible] = useState(true);
 
     const urlRegex = /(https?:\/\/\S+)/g;
-    const parts = message.text.split(urlRegex);
+    const parts = message.text.split(urlRegex).filter((part) => part);
 
     useEffect(() => {
         setLongMsgHeight(200);
@@ -31,7 +31,7 @@ const MessageText: React.FC<MessageTextProps> = ({
     useEffect(() => {
         if (
             typeof elementRef.current?.clientHeight !== "undefined" &&
-            longMsgHeight >= elementRef.current?.clientHeight
+            longMsgHeight > elementRef.current?.clientHeight
         )
             setIsShowButtonVisible(false);
     }, [longMsgHeight]);
@@ -46,34 +46,27 @@ const MessageText: React.FC<MessageTextProps> = ({
             }}
         >
             <span className="block break-all h-full overflow-hidden">
-                {parts.map((part, index) => {
-                    if (urlRegex.test(part)) {
-                        return (
-                            <a
-                                ref={elementRef}
-                                key={index}
-                                href={part}
-                                target="_blank"
-                                className="text-blue-link hover:underline"
-                            >
-                                {part}
-                            </a>
-                        );
-                    } else {
-                        return (
-                            <span
-                                className="block"
-                                ref={elementRef}
-                                key={index}
-                            >
-                                {part}
-                            </span>
-                        );
-                    }
-                })}
-                <span className="absolute bottom-0 right-2 text-[10px] text-gray-char">
-                    {formatTime(message.createdAt)}
+                <span ref={elementRef} className="block">
+                    {parts.map((part, index) => {
+                        if (urlRegex.test(part)) {
+                            return (
+                                <a
+                                    key={index}
+                                    href={part}
+                                    target="_blank"
+                                    className="text-blue-link hover:underline"
+                                >
+                                    {part}
+                                </a>
+                            );
+                        } else {
+                            return <span key={index}>{part}</span>;
+                        }
+                    })}
                 </span>
+            </span>
+            <span className="absolute bottom-0 right-2 text-[10px] text-gray-char">
+                {formatTime(message.createdAt)}
             </span>
             {isShowButtonVisible && (
                 <span

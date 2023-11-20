@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import Image from "next/image";
+import Spinner from "../../shared/Spinner";
 import { useChats, useCurrentUser, useSocket, useUsers } from "@/app/hooks";
-import loadingIcon from "@/../public/loadingIcon.svg";
 import {
     Chat,
     User,
@@ -31,7 +30,7 @@ const ContentList = ({
     const socket = useSocket();
     const { chats, isLoading, getChats } = useChats();
     const users = useUsers();
-    const currentUser = useCurrentUser();
+    const { currentUser } = useCurrentUser();
 
     const joinPersonalRoom = (userId: string | undefined) => {
         if (userId) socket.emit("join-personal-room", currentUser?.id);
@@ -98,14 +97,7 @@ const ContentList = ({
         );
     };
 
-    if (isLoading)
-        return (
-            <Image
-                alt="loading-spiner"
-                src={loadingIcon}
-                className="mx-auto mt-16 animate-spin"
-            />
-        );
+    if (isLoading) return <Spinner />;
     if (searchedChats?.length === 0 && searchedUsers?.length === 0)
         return (
             <p className="text-center p-16 text-dark-gray">
