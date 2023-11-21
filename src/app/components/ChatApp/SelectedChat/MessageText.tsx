@@ -19,21 +19,29 @@ const MessageText: React.FC<MessageTextProps> = ({
     const elementRef = useRef<HTMLAnchorElement | null>(null);
 
     const [longMsgHeight, setLongMsgHeight] = useState(200);
-    const [isShowButtonVisible, setIsShowButtonVisible] = useState(true);
+    const [isShowButtonVisible, setIsShowButtonVisible] = useState(false);
 
     const urlRegex = /(https?:\/\/\S+)/g;
     const parts = message.text.split(urlRegex).filter((part) => part);
 
-    useEffect(() => {
-        setLongMsgHeight(200);
-    }, [data.id]);
-
-    useEffect(() => {
+    const handleShowMoreVisibility = () => {
         if (
             typeof elementRef.current?.clientHeight !== "undefined" &&
-            longMsgHeight > elementRef.current?.clientHeight
+            longMsgHeight < elementRef.current?.clientHeight
         )
+            setIsShowButtonVisible(true);
+        else {
             setIsShowButtonVisible(false);
+        }
+    };
+
+    useEffect(() => {
+        setLongMsgHeight(200);
+        handleShowMoreVisibility();
+    }, [data.id, message]);
+
+    useEffect(() => {
+        handleShowMoreVisibility();
     }, [longMsgHeight]);
 
     return (
