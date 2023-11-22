@@ -31,28 +31,33 @@ const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({
 
     return (
         <div className="flex flex-col gap-2">
-            {metaData.imageUrl && (
-                <div className="flex flex-col items-center gap-2 bg-[#d1f4cc] py-1.5 px-2.5 w-full rounded-md">
-                    <a
-                        className="text-blue-link font-bold hover:underline"
-                        href={url}
-                        target="_blank"
-                    >
-                        {metaData.title}
-                    </a>
-                    <span className="text-black cursor-text">
-                        {metaData.description}
-                    </span>
+            <div
+                className={`${
+                    metaData.title || metaData.description || metaData.imageUrl
+                        ? "flex flex-col items-center gap-2 bg-[#d1f4cc] py-1.5 px-2.5 w-full rounded-md"
+                        : "hidden"
+                }`}
+            >
+                <a
+                    className="text-blue-link font-bold hover:underline"
+                    href={url}
+                    target="_blank"
+                >
+                    {metaData.title}
+                </a>
+                <span className="text-black cursor-text">
+                    {metaData.description}
+                </span>
 
-                    <img
-                        alt="meta-image"
-                        className="max-h-lg max-w-xs max-h-52 object-contain cursor-pointer"
-                        src={metaData.imageUrl}
-                        title="Navigate to Image's source"
-                        onClick={() => window.open(metaData.imageUrl, "_blank")}
-                    />
-                </div>
-            )}
+                <img
+                    alt="meta-image"
+                    className="max-h-lg max-w-xs max-h-52 object-contain cursor-pointer"
+                    src={metaData.imageUrl}
+                    title="Navigate to Image's source"
+                    onClick={() => window.open(metaData.imageUrl, "_blank")}
+                />
+            </div>
+
             <a
                 className="text-blue-link hover:underline px-2.5"
                 href={url}
