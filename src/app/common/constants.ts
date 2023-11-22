@@ -1,10 +1,10 @@
-import { Chat } from "./types";
+import { Chat, MetaParser } from "./types";
 
 export const BASE_URL = "https://mario.webmarc.cucuza.com";
 export const isCurrentUser = (id: string | undefined, currentUser: string) =>
     id === currentUser;
 
-export const ChatDefault = {
+export const ChatDefault: Chat = {
     id: "",
     createdAt: "",
     friendId: "",
@@ -24,4 +24,10 @@ export const ChatDefault = {
     },
     messages: [{ createdAt: "", receiverId: "", senderId: "", text: "" }],
     userId: "",
+};
+
+export const MetaParserDefault: MetaParser = {
+    title: "",
+    description: "",
+    imageUrl: "",
 };

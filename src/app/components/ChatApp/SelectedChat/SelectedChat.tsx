@@ -28,6 +28,8 @@ import {
     BASE_URL,
     Chat,
     Message,
+    MetaParserDefault,
+    MetaParser,
     User,
     dictionary,
     formatDay,
@@ -50,6 +52,12 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         const [isDrawerOpen, setDrawerOpen] = useState(false);
         const [messages, setMessages] = useState<Message[]>([]);
         const [messageInputValue, setMessageInputValue] = useState("");
+        const [messageMetaData, setMessageMetaData] =
+            useState(MetaParserDefault);
+
+        const receivedMetaData = (data: MetaParser) => {
+            setMessageMetaData(data);
+        };
 
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             const { value } = e.target;
@@ -151,7 +159,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             if (scrollRef.current) {
                 scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
             }
-        }, [messages, isLoading]);
+        }, [messages, isLoading, messageMetaData]);
 
         if (isLoading) return <Spinner />;
 
@@ -175,7 +183,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                             <ol className="relative flex flex-col-reverse flex-grow px-16 py-4">
                                 {messages.map((message, index) => (
                                     <Fragment key={`fragment-${index}`}>
-                                        <li
+                                        <div
                                             key={index}
                                             className={`flex my-0.5 self-${
                                                 message.senderId ===
@@ -191,6 +199,9 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                                         data={data}
                                                         message={message}
                                                         senderClass="bg-green-msg rounded-tr-[0]"
+                                                        handleMetaData={
+                                                            receivedMetaData
+                                                        }
                                                     />
                                                     {displayTailOutSvg()}
                                                 </>
@@ -202,10 +213,13 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                                         data={data}
                                                         message={message}
                                                         receiverClass="bg-white rounded-tl-[0]"
+                                                        handleMetaData={
+                                                            receivedMetaData
+                                                        }
                                                     />
                                                 </>
                                             )}
-                                        </li>
+                                        </div>
                                         {displayDate(
                                             index,
                                             index + 1,

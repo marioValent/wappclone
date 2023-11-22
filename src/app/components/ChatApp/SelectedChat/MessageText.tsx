@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Chat, Message, User, formatTime } from "@/app/common";
+import SocialMetadataLink from "./SocialMetadataLink";
+import { Chat, Message, MetaParser, User, formatTime } from "@/app/common";
 
 interface MessageTextProps {
     data: Chat | User;
@@ -7,14 +8,16 @@ interface MessageTextProps {
     globalClass?: string;
     senderClass?: string;
     receiverClass?: string;
+    handleMetaData: (data: MetaParser) => void;
 }
 
 const MessageText: React.FC<MessageTextProps> = ({
     data,
-    globalClass = "relative p-1.5 pr-10 rounded-lg text-sm max-w-md",
+    globalClass = "relative p-1.5 rounded-lg text-sm max-w-md",
     message,
     receiverClass,
     senderClass,
+    handleMetaData,
 }) => {
     const elementRef = useRef<HTMLAnchorElement | null>(null);
 
@@ -36,7 +39,7 @@ const MessageText: React.FC<MessageTextProps> = ({
     };
 
     useEffect(() => {
-        setLongMsgHeight(200);
+        setLongMsgHeight(400);
         handleShowMoreVisibility();
     }, [data.id, message]);
 
@@ -53,19 +56,20 @@ const MessageText: React.FC<MessageTextProps> = ({
                 maxHeight: `${longMsgHeight}px`,
             }}
         >
-            <span className="block break-all h-full overflow-hidden">
+            <span
+                className={`block break-all overflow-hidden ${
+                    isShowButtonVisible ? "h-full" : ""
+                }`}
+            >
                 <span ref={elementRef} className="block">
                     {parts.map((part, index) => {
                         if (urlRegex.test(part)) {
                             return (
-                                <a
+                                <SocialMetadataLink
+                                    handleMetaData={handleMetaData}
                                     key={index}
-                                    href={part}
-                                    target="_blank"
-                                    className="text-blue-link hover:underline"
-                                >
-                                    {part}
-                                </a>
+                                    url={part}
+                                />
                             );
                         } else {
                             return <span key={index}>{part}</span>;
@@ -73,9 +77,10 @@ const MessageText: React.FC<MessageTextProps> = ({
                     })}
                 </span>
             </span>
-            <span className="absolute bottom-0 right-2 text-[10px] text-gray-char">
+            <span className="block text-right text-[10px] text-gray-char">
                 {formatTime(message.createdAt)}
             </span>
+
             {isShowButtonVisible && (
                 <span
                     className="absolute bottom-1 left-1.5 text-xs text-blue-link cursor-pointer"
