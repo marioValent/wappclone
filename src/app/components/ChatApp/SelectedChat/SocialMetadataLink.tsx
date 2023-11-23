@@ -13,8 +13,10 @@ const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({
     handleMetaData,
 }) => {
     const [metaData, setMetaData] = useState(MetaParserDefault);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        setIsLoading(true);
         axios
             .get(`${BASE_URL}/api/message/meta?query=${url}`)
             .then((response) => {
@@ -22,12 +24,13 @@ const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({
                 setMetaData(response.data);
                 handleMetaData(response.data);
             })
+            .finally(() => setIsLoading(false))
             .catch((error) =>
                 console.error("Error fetching data from server:", error)
             );
     }, [url]);
 
-    if (!metaData) return <Spinner />;
+    if (!metaData || isLoading) return <Spinner />;
 
     return (
         <div className="flex flex-col gap-2">
