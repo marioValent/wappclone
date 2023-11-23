@@ -7,7 +7,7 @@ import SideMenu from "./SideMenu/SideMenu";
 import SelectedChat from "./SelectedChat/SelectedChat";
 import chatImg from "@/../public/convesation-img-default.png";
 import logoutIcon from "@/../public/logoutIcon.svg";
-import { Chat, User, deleteToken, dictionary } from "@/app/common";
+import { Chat, User, deleteToken, dictionary, getToken } from "@/app/common";
 
 const logoutStyle = {
     filter: "brightness(0) invert(1)",
@@ -15,6 +15,8 @@ const logoutStyle = {
 
 const ChatApp: React.FC = () => {
     const router = useRouter();
+    const token = getToken();
+
     const [selectedChat, setSelectedChat] = useState<Chat | User | null>(null);
     const messageInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,6 +38,11 @@ const ChatApp: React.FC = () => {
         deleteToken();
         router.push("/");
     };
+
+    useEffect(() => {
+        if (!token) router.push("/");
+        return;
+    }, []);
 
     return (
         <div className="flex h-full">

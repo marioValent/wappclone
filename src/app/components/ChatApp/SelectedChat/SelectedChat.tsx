@@ -161,7 +161,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             }
         }, [messages, isLoading, messageMetaData]);
 
-        if (isLoading) return <Spinner />;
+        if (isLoading) return <Spinner customClassName="h-5/6" />;
 
         return (
             <div className="relative z-10 h-full">
