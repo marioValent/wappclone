@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { MetaParserDefault } from "@/app/common";
 
 export async function GET(request: NextRequest) {
     try {
@@ -30,13 +31,10 @@ export async function GET(request: NextRequest) {
             headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
-        console.error("Error fetching data from surfsite.ai:", error);
-        return new NextResponse(
-            JSON.stringify({ error: "Internal Server Error" }),
-            {
-                status: 500,
-                headers: { "Content-Type": "application/json" },
-            }
-        );
+        // console.error("Error fetching data:", error);
+        return new NextResponse(JSON.stringify(MetaParserDefault), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        });
     }
 }

@@ -1,36 +1,37 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Spinner from "../../shared/Spinner";
-import { BASE_URL, MetaParserDefault, MetaParser } from "@/app/common";
+import { BASE_URL, MetaParserDefault } from "@/app/common";
 
 interface SocialMetadataLinkProps {
     url: string;
-    handleMetaData: (data: MetaParser) => void;
 }
 
-const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({
-    url,
-    handleMetaData,
-}) => {
+const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({ url }) => {
     const [metaData, setMetaData] = useState(MetaParserDefault);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setIsLoading(true);
-        axios
-            .get(`${BASE_URL}/api/message/meta?query=${url}`)
-            .then((response) => {
-                console.log("Data from surfsite.ai: ", response.data);
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(
+                    `${BASE_URL}/api/message/meta?query=${url}`
+                );
+                console.log("Response data: ", response.data);
                 setMetaData(response.data);
-                handleMetaData(response.data);
-            })
-            .finally(() => setIsLoading(false))
-            .catch((error) =>
-                console.error("Error fetching data from server:", error)
-            );
+            } catch (error: any) {
+                if (error.response?.status === 500) {
+                    setMetaData(MetaParserDefault);
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
     }, [url]);
 
-    if (!metaData || isLoading) return <Spinner />;
+    if (isLoading) return <Spinner />;
 
     return (
         <div className="flex flex-col gap-2">

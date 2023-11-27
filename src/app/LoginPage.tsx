@@ -35,7 +35,7 @@ const LoginPage = () => {
         return;
     }, []);
 
-    if (isLoading) return <Spinner />;
+    if (isLoading) return <Spinner customClassName="mb-16" />;
     // const [isOnline, setOnline] = useState(true);
     // useEffect(() => {
     //     setOnline(navigator.onLine);

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import SocialMetadataLink from "./SocialMetadataLink";
-import { Chat, Message, MetaParser, User, formatTime } from "@/app/common";
+import SocialMetadataLink from "./SocialMetaDataLink";
+import { Chat, Message, User, formatTime } from "@/app/common";
 
 interface MessageTextProps {
     data: Chat | User;
@@ -8,7 +8,6 @@ interface MessageTextProps {
     globalClass?: string;
     senderClass?: string;
     receiverClass?: string;
-    handleMetaData: (data: MetaParser) => void;
 }
 
 const MessageText: React.FC<MessageTextProps> = ({
@@ -17,15 +16,15 @@ const MessageText: React.FC<MessageTextProps> = ({
     message,
     receiverClass,
     senderClass,
-    handleMetaData,
 }) => {
-    const elementRef = useRef<HTMLAnchorElement | null>(null);
+    const elementRef = useRef<HTMLDivElement | null>(null);
 
     const [longMsgHeight, setLongMsgHeight] = useState(200);
     const [isShowButtonVisible, setIsShowButtonVisible] = useState(false);
 
     const urlRegex = /(https?:\/\/\S+)/g;
     const parts = message.text.split(urlRegex).filter((part) => part);
+    const uniqueParts = Array.from(new Set(parts));
 
     const handleShowMoreVisibility = () => {
         if (
@@ -56,27 +55,23 @@ const MessageText: React.FC<MessageTextProps> = ({
                 maxHeight: `${longMsgHeight}px`,
             }}
         >
-            <span
-                className={`block break-all overflow-hidden ${
+            <div
+                className={`break-all overflow-hidden ${
                     isShowButtonVisible ? "h-full" : ""
                 }`}
             >
-                <span ref={elementRef} className="block">
-                    {parts.map((part, index) => {
+                <div ref={elementRef}>
+                    {uniqueParts.map((part, index) => {
                         if (urlRegex.test(part)) {
                             return (
-                                <SocialMetadataLink
-                                    handleMetaData={handleMetaData}
-                                    key={index}
-                                    url={part}
-                                />
+                                <SocialMetadataLink key={index} url={part} />
                             );
                         } else {
                             return <span key={index}>{part}</span>;
                         }
                     })}
-                </span>
-            </span>
+                </div>
+            </div>
             <span className="block text-right text-[10px] text-gray-char">
                 {formatTime(message.createdAt)}
             </span>
