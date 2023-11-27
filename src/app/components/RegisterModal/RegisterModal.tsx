@@ -94,7 +94,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
                     titleText={dictionary.modal.register.title}
                     closeModal={closeModal}
                 >
-                    {isLoading ? (
+                    {!formErrors && isLoading ? (
                         <Spinner customClassName="mb-16" />
                     ) : (
                         <form onSubmit={handleSubmit}>
@@ -212,7 +212,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
                                 </div>
                             )}
                             <div className="flex justify-center">
-                                <Button variant="primary" type="submit">
+                                <Button variant="secondary" type="submit">
                                     {dictionary.global.registerBtn}
                                 </Button>
                             </div>

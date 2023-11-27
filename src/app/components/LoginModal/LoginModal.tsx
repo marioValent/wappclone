@@ -15,11 +15,13 @@ import { BASE_URL, dictionary, setToken } from "@/app/common";
 interface LoginModalProps {
     isLoginModalOpen: boolean;
     setIsLoginModalOpen: (value: React.SetStateAction<boolean>) => void;
+    setIsResetPassModalOpen: (value: React.SetStateAction<boolean>) => void;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({
     isLoginModalOpen,
     setIsLoginModalOpen,
+    setIsResetPassModalOpen,
 }: LoginModalProps) => {
     const router = useRouter();
 
@@ -31,6 +33,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
     const closeModal = () => {
         setIsLoginModalOpen(false);
         setFormErrors([]);
+    };
+
+    const openResetPassModal = () => {
+        setIsLoginModalOpen(false);
+        setIsResetPassModalOpen(true);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +90,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
                     titleText={dictionary.modal.login.title}
                     closeModal={closeModal}
                 >
-                    {isLoading ? (
+                    {!formErrors && isLoading ? (
                         <Spinner customClassName="mb-16" />
                     ) : (
                         <form onSubmit={handleSubmit}>
@@ -131,6 +138,17 @@ const LoginModal: React.FC<LoginModalProps> = ({
                                     {dictionary.global.loginBtn}
                                 </Button>
                             </div>
+                            <span className="flex gap-1 justify-center text-xs p-2 mt-2">
+                                <span>
+                                    {dictionary.modal.login.resetPasswordMsg1}
+                                </span>
+                                <span
+                                    className="font-medium text-blue-link cursor-pointer"
+                                    onClick={openResetPassModal}
+                                >
+                                    {dictionary.modal.login.resetPasswordMsg2}
+                                </span>
+                            </span>
                         </form>
                     )}
                 </Modal>
