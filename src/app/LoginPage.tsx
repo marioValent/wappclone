@@ -6,7 +6,7 @@ import Button from "./components/shared/Button";
 // import InternetErrorPage from "./InternetErrorPage";
 import LoginModal from "./components/LoginModal/LoginModal";
 import RegisterModal from "./components/RegisterModal/RegisterModal";
-import ResetPassModal from "./components/ResetPasswordModal/ResetPassModal";
+import ForgotPasswordModal from "./components/ForgotPasswordModal/ForgotPasswordModal";
 import Spinner from "./components/shared/Spinner";
 import loginIcon from "@/../public/loginIcon.svg";
 import registerIcon from "@/../public/registerIcon.svg";
@@ -19,7 +19,7 @@ const LoginPage = () => {
 
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-    const [isResetPassModalOpen, setIsResetPassModalOpen] = useState(false);
+    const [isForgotPassModalOpen, setIsForgotPassModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     const openLoginModal = () => {
@@ -76,15 +76,15 @@ const LoginPage = () => {
                         <LoginModal
                             isLoginModalOpen={isLoginModalOpen}
                             setIsLoginModalOpen={setIsLoginModalOpen}
-                            setIsResetPassModalOpen={setIsResetPassModalOpen}
+                            setIsForgotPassModalOpen={setIsForgotPassModalOpen}
                         />
                         <RegisterModal
                             isRegisterModalOpen={isRegisterModalOpen}
                             setIsRegisterModalOpen={setIsRegisterModalOpen}
                         />
-                        <ResetPassModal
-                            isResetPassModalOpen={isResetPassModalOpen}
-                            setIsResetPassModalOpen={setIsResetPassModalOpen}
+                        <ForgotPasswordModal
+                            isForgotPassModalOpen={isForgotPassModalOpen}
+                            setIsForgotPassModalOpen={setIsForgotPassModalOpen}
                         />
                     </div>
                 </div>

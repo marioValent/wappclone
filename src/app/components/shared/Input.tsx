@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React, { InputHTMLAttributes, forwardRef } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -29,12 +28,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     return (
         <div className={classNameDiv}>
             <label htmlFor={id}>{textLabel}</label>
-            {/* <span
-                onClick={clickIconHandler}
-                className="absolute left-3 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center cursor-pointer"
-            >
-                {iconLeft}
-            </span> */}
             <div className="input flex items-center">
                 {iconLeft}
                 <input
@@ -46,15 +39,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
                     value={value}
                     {...props}
                 />
-                {
-                    iconRight
-                    // <span
-                    //     onClick={clickIconHandler}
-                    //     className="absolute right-3 top-1/2 h-6 w-6 flex items-center cursor-pointer"
-                    // >
-                    //     {iconRight}
-                    // </span>
-                }
+                {value && iconRight}
             </div>
         </div>
     );

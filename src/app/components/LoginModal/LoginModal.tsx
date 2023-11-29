@@ -15,13 +15,13 @@ import { BASE_URL, dictionary, setToken } from "@/app/common";
 interface LoginModalProps {
     isLoginModalOpen: boolean;
     setIsLoginModalOpen: (value: React.SetStateAction<boolean>) => void;
-    setIsResetPassModalOpen: (value: React.SetStateAction<boolean>) => void;
+    setIsForgotPassModalOpen: (value: React.SetStateAction<boolean>) => void;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({
     isLoginModalOpen,
     setIsLoginModalOpen,
-    setIsResetPassModalOpen,
+    setIsForgotPassModalOpen,
 }: LoginModalProps) => {
     const router = useRouter();
 
@@ -35,9 +35,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
         setFormErrors([]);
     };
 
-    const openResetPassModal = () => {
+    const openForgotPassModal = () => {
         setIsLoginModalOpen(false);
-        setIsResetPassModalOpen(true);
+        setIsForgotPassModalOpen(true);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,7 +96,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
                         <form onSubmit={handleSubmit}>
                             <Input
                                 id="email"
-                                classNameDiv="mb-2"
+                                classNameDiv="mb-4"
                                 placeholder={dictionary.modal.emailPlaceholder}
                                 textLabel={dictionary.modal.emailLabel}
                                 type="email"
@@ -105,7 +105,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
                             />
                             <Input
                                 id="password"
-                                classNameDiv="mb-4"
+                                classNameDiv="mb-5"
                                 iconRight={
                                     <Image
                                         src={
@@ -144,7 +144,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
                                 </span>
                                 <span
                                     className="font-medium text-blue-link cursor-pointer"
-                                    onClick={openResetPassModal}
+                                    onClick={openForgotPassModal}
                                 >
                                     {dictionary.modal.login.resetPasswordMsg2}
                                 </span>

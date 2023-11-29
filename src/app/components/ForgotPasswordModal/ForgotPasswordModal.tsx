@@ -1,17 +1,18 @@
 import React, { useState } from "react";
+import axios from "axios";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
 import Modal from "../shared/Modal";
-import { dictionary } from "@/app/common";
+import { BASE_URL, dictionary } from "@/app/common";
 
-interface ResetPassModalProps {
-    isResetPassModalOpen: boolean;
-    setIsResetPassModalOpen: (value: React.SetStateAction<boolean>) => void;
+interface ForgotPasswordModalProps {
+    isForgotPassModalOpen: boolean;
+    setIsForgotPassModalOpen: (value: React.SetStateAction<boolean>) => void;
 }
 
-const ResetPassModal: React.FC<ResetPassModalProps> = ({
-    isResetPassModalOpen,
-    setIsResetPassModalOpen,
+const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
+    isForgotPassModalOpen,
+    setIsForgotPassModalOpen,
 }) => {
     const [email, setEmail] = useState("");
 
@@ -19,8 +20,10 @@ const ResetPassModal: React.FC<ResetPassModalProps> = ({
     const [isEmailValid, setIsEmailValid] = useState(true);
 
     const closeModal = () => {
-        setIsResetPassModalOpen(false);
+        setIsForgotPassModalOpen(false);
         setIsInfoMsgVisible(false);
+        setEmail("");
+        setIsEmailValid(true);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,9 +37,27 @@ const ResetPassModal: React.FC<ResetPassModalProps> = ({
         return emailRegex.test(email);
     };
 
+    const sendEmail = async () => {
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/api/email-reset-password`,
+                { to: email },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            console.log("Response data: ", response.data);
+        } catch (err) {
+            console.log("err: ", err);
+        }
+    };
+
     const handleResetBtnClick = () => {
         if (isValidEmail(email)) {
             setIsInfoMsgVisible(true);
+            sendEmail();
         } else {
             setIsEmailValid(false);
         }
@@ -44,7 +65,7 @@ const ResetPassModal: React.FC<ResetPassModalProps> = ({
 
     return (
         <>
-            {isResetPassModalOpen && (
+            {isForgotPassModalOpen && (
                 <Modal
                     titleText={dictionary.modal.resetPass.title}
                     closeModal={closeModal}
@@ -58,7 +79,7 @@ const ResetPassModal: React.FC<ResetPassModalProps> = ({
 
                         <Input
                             id="email"
-                            classNameDiv="mb-4"
+                            classNameDiv="mb-6"
                             placeholder={dictionary.modal.emailPlaceholder}
                             textLabel={dictionary.modal.emailLabel}
                             type="email"
@@ -87,4 +108,4 @@ const ResetPassModal: React.FC<ResetPassModalProps> = ({
     );
 };
 
-export default ResetPassModal;
+export default ForgotPasswordModal;
