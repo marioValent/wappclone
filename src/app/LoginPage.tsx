@@ -57,7 +57,7 @@ const LoginPage = () => {
                     <h1 className="text-4xl font-bold mb-4">
                         {dictionary.loginPage.title}
                     </h1>
-                    <p className="text-lg mb-6">
+                    <p className="text-lg pl-1">
                         {dictionary.loginPage.subtitle}
                     </p>
                     <div className="flex gap-4">
