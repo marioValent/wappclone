@@ -39,6 +39,7 @@ export const dictionary = {
         resetPass: {
             infoMsg:
                 "If your username matches an existing account, we'll send you a password reset email within a few minutes. If you did not receive the email, please check your Spam folder or contact Support.",
+            jumpBtn: "Jump to login page",
             resetBtn: "Reset",
             title: "Enter your email. The one you use to log in.",
         },

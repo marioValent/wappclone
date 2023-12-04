@@ -42,7 +42,7 @@ const ChatApp: React.FC = () => {
     useEffect(() => {
         if (!token) router.push("/");
         return;
-    }, []);
+    }, [selectedChat]);
 
     return (
         <div className="flex h-full">

@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const PRIVATE_KEY = "wapp-clone-private-key-1";
+const { PRIVATE_KEY } = process.env;
 
 export const signJWT = (payload: string | object | Buffer): string => {
     const token = jwt.sign(payload, PRIVATE_KEY);

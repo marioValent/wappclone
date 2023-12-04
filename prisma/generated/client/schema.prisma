@@ -12,18 +12,19 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(cuid())
+  id               String          @id @default(cuid())
   firstName        String
   lastName         String
   phone            String
   password         String
-  email            String    @unique
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  sentMessages     Message[] @relation("sender")
-  receivedMessages Message[] @relation("receiver")
-  chat             Chat[]    @relation("user")
-  chatFriend       Chat[]    @relation("friend")
+  email            String          @unique
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  sentMessages     Message[]       @relation("sender")
+  receivedMessages Message[]       @relation("receiver")
+  chat             Chat[]          @relation("user")
+  chatFriend       Chat[]          @relation("friend")
+  passwordResets   PasswordReset[]
 }
 
 model Message {
@@ -48,4 +49,13 @@ model Chat {
   messages  Message[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String
+  used      Boolean  @default(false)
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
 }

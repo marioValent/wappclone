@@ -136,6 +136,14 @@ exports.Prisma.ChatScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PasswordResetScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  used: 'used',
+  expiresAt: 'expiresAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -155,7 +163,8 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   User: 'User',
   Message: 'Message',
-  Chat: 'Chat'
+  Chat: 'Chat',
+  PasswordReset: 'PasswordReset'
 };
 
 /**

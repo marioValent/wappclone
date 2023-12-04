@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { signJWT } from "@/lib/jwt";
 import db from "@/lib/db";
 
 export async function POST(request: NextRequest) {
@@ -25,11 +26,26 @@ export async function POST(request: NextRequest) {
             },
         });
 
+        const existingUserIdObject =
+            typeof existingUser.id === "object"
+                ? existingUser.id
+                : { data: existingUser.id };
+
+        const token = signJWT({ ...existingUserIdObject, iat: Date.now() });
+
+        await db.passwordReset.create({
+            data: {
+                userId: existingUser.id,
+                token,
+                expiresAt: new Date(Date.now() + 3600000), // Set expiration time (1 hour in milliseconds)
+            },
+        });
+
         const mailOptions = {
             from: NODEMAILER_EMAIL,
             to: body.to,
             subject: `Reset Passowrd for account: ${body.to}`,
-            text: `Access the following link in order to reset your password: https://mario.webmarc.cucuza.com/reset-password?query=${body.to}`,
+            text: `Access the following link in order to reset your password: https://mario.webmarc.cucuza.com/reset-password?query=${body.to}&token=${token}`,
         };
         transporter.sendMail(mailOptions, (err, info) => {
             console.log(info.messageId);

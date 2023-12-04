@@ -17,6 +17,7 @@ const ResetPassword = () => {
     const router = useRouter();
     const params = useSearchParams();
     const email = params.get("query");
+    const queryToken = params.get("token");
 
     const [formData, setFormData] = useState({
         password: "",
@@ -26,8 +27,10 @@ const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConPassword, setShowConPassword] = useState(false);
 
-    const [countdown, setCountdown] = useState(5);
+    const [countdown, setCountdown] = useState(10);
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [responseReceived, setResponseReceived] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -65,9 +68,15 @@ const ResetPassword = () => {
             `${BASE_URL}/api/user/reset-password`,
             {
                 email: email,
+                token: queryToken,
                 newPassword: formData.password,
             }
         );
+        setResponseReceived(true);
+
+        if (response.data.error === "TokenExpiredError") {
+            setErrorMessage(response.data.message);
+        }
         console.log("Response data: ", response.data);
     };
 
@@ -86,6 +95,12 @@ const ResetPassword = () => {
         }
     };
 
+    const onEnterDown = async (
+        event: React.KeyboardEvent<HTMLInputElement>
+    ) => {
+        if (event.key === "Enter") handleResetBtnClick();
+    };
+
     useEffect(() => {
         return () => {
             if (intervalId) {
@@ -100,10 +115,30 @@ const ResetPassword = () => {
         <>
             {intervalId && countdown > 0 ? (
                 <div>
-                    <h1 className="text-lg font-medium">
-                        Password reset successfully. You will be redirected to
-                        the login page in {countdown} seconds.
-                    </h1>
+                    {responseReceived && (
+                        <>
+                            <h1
+                                className={`text-lg font-medium ${
+                                    errorMessage && "text-red-600"
+                                }`}
+                            >
+                                {errorMessage
+                                    ? errorMessage
+                                    : "Password reset successfully."}{" "}
+                                You will be redirected to the login page in{" "}
+                                {countdown} seconds.
+                            </h1>
+
+                            <div className="flex justify-center mt-4">
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => router.push("/")}
+                                >
+                                    {dictionary.modal.resetPass.jumpBtn}
+                                </Button>
+                            </div>
+                        </>
+                    )}
                 </div>
             ) : (
                 <Modal
@@ -165,6 +200,7 @@ const ResetPassword = () => {
                         type={showConPassword ? "text" : "password"}
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
+                        onKeyDown={onEnterDown}
                     />
                     {formErrors.length > 0 && (
                         <div className="text-red-600 mb-4">
