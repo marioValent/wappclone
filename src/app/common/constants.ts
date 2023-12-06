@@ -22,7 +22,9 @@ export const ChatDefault: Chat = {
         chat: [] as Chat[],
         chatFriend: [] as Chat[],
     },
-    messages: [{ createdAt: "", receiverId: "", senderId: "", text: "" }],
+    messages: [
+        { id: "", createdAt: "", receiverId: "", senderId: "", text: "" },
+    ],
     userId: "",
 };
 

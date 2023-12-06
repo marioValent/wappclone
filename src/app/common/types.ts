@@ -6,6 +6,7 @@ export type User = {
     chatFriend: Chat[];
 };
 export type Message = {
+    id: string;
     createdAt: string;
     receiverId: string;
     senderId: string;

@@ -19,8 +19,6 @@ import myProfileIcon from "@/../public/myProfile.svg";
 import sendArrow from "@/../public/sendArrow.svg";
 import {
     displayDate,
-    displayTailInSvg,
-    displayTailOutSvg,
     getContentData,
     getNavbarData,
 } from "./SelectedChat.utils";
@@ -32,9 +30,9 @@ import {
     dictionary,
     formatDay,
     getToken,
-    isCurrentUser,
 } from "@/app/common";
 import axios from "axios";
+
 interface SelectedChatProps {
     data: Chat | User;
     focusMessageInput: () => void;
@@ -78,9 +76,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         "send-message",
                         chatData.id,
                         chatData.userId,
-                        !isCurrentUser(chatData.userId, currentUser?.id || "")
-                            ? chatData.userId
-                            : chatData.friendId,
+                        chatData.friendId,
                         messageInputValue
                     );
                     setSelectedChat(chatData);
@@ -93,9 +89,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                     "send-message",
                     data.id,
                     currentUser?.id,
-                    !isCurrentUser((data as Chat).userId, currentUser?.id || "")
-                        ? (data as Chat).userId
-                        : (data as Chat).friendId,
+                    (data as Chat).friendId,
                     messageInputValue
                 );
                 setMessageInputValue("");
@@ -174,47 +168,21 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         {messages?.length > 0 ? (
                             <ol className="relative flex flex-col-reverse flex-grow px-16 py-4">
                                 {messages.map((message, index) => (
-                                    <Fragment key={`fragment-${index}`}>
-                                        <div
-                                            key={index}
-                                            className={`flex my-0.5 self-${
+                                    <Fragment key={message.id}>
+                                        <MessageText
+                                            data={data}
+                                            message={message}
+                                            isSender={
                                                 message.senderId ===
                                                 currentUser?.id
-                                                    ? "end"
-                                                    : "start"
-                                            }`}
-                                        >
-                                            {message.senderId ===
-                                            currentUser?.id ? (
-                                                <>
-                                                    <MessageText
-                                                        data={data}
-                                                        message={message}
-                                                        senderClass="bg-green-msg rounded-tr-[0]"
-                                                    />
-                                                    {displayTailOutSvg()}
-                                                </>
-                                            ) : (
-                                                <>
-                                                    {displayTailInSvg()}
-
-                                                    <MessageText
-                                                        data={data}
-                                                        message={message}
-                                                        receiverClass="bg-white rounded-tl-[0]"
-                                                    />
-                                                </>
-                                            )}
-                                        </div>
+                                            }
+                                        />
                                         {displayDate(
                                             index,
                                             index + 1,
                                             messages
                                         ) ? (
-                                            <span
-                                                key={`date-${index}`}
-                                                className="bg-white text-sm text-[#54656F] p-2 my-4 rounded-lg z-30 w-fit flex mx-auto"
-                                            >
+                                            <span className="bg-white text-sm text-[#54656F] p-2 my-4 rounded-lg z-30 w-fit flex mx-auto">
                                                 {formatDay(message.createdAt)}
                                             </span>
                                         ) : null}

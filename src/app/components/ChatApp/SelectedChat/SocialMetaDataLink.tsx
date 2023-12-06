@@ -17,7 +17,6 @@ const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({ url }) => {
                 const response = await axios.get(
                     `${BASE_URL}/api/message/meta?query=${url}`
                 );
-                console.log("Response data: ", response.data);
                 setMetaData(response.data);
             } catch (error: any) {
                 if (error.response?.status === 500) {

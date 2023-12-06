@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { BASE_URL, User, getToken } from "../common";
-import { useChats } from "./useChats";
 
 export const useUsers = (): User[] => {
     const token = getToken();
     const [users, setUsers] = useState(Array<User>);
-    const chats = useChats();
 
     const getUsers = async () => {
         try {
@@ -36,7 +34,7 @@ export const useUsers = (): User[] => {
 
     useEffect(() => {
         getUsers();
-    }, [chats]);
+    }, []);
 
     return users;
 };
