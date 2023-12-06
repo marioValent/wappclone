@@ -65,7 +65,7 @@ const MessageText: React.FC<MessageTextProps> = ({
                         ref={elementRef}
                         className={`${
                             !isShowButtonVisible && "max-h-[400px]"
-                        } bg-green-msg`}
+                        } ${isSender ? "bg-green-msg" : "bg-white"}`}
                     >
                         {uniqueParts.map((part, index) => {
                             if (urlRegex.test(part)) {
@@ -81,7 +81,11 @@ const MessageText: React.FC<MessageTextProps> = ({
                         })}
                     </div>
                 </div>
-                <span className="block bg-green-msg text-right text-[10px] text-gray-char">
+                <span
+                    className={`block ${
+                        isSender ? "bg-green-msg" : "bg-white"
+                    } text-right text-[10px] text-gray-char`}
+                >
                     {formatTime(message.createdAt)}
                 </span>
 
