@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
             console.log(receiverId);
 
             if (senderId) {
-                await db.message.create({
+                const newMessage = await db.message.create({
                     data: {
                         senderId,
                         receiverId,
@@ -43,16 +43,12 @@ io.on("connection", (socket) => {
                         chatId: room,
                     },
                 });
+
+                io.to(room).emit("received-messages", newMessage);
+                io.to(senderId).to(receiverId).emit("received-chat-list", []);
+
+                console.log("message sent");
             }
-
-            const messages = await db.message.findMany({
-                where: { chatId: room },
-            });
-
-            io.to(room).emit("received-messages", messages.reverse());
-            io.to(senderId).to(receiverId).emit("received-chat-list", []);
-
-            console.log("message sent");
         } catch (error) {
             console.error("Error sending message:", error);
         }

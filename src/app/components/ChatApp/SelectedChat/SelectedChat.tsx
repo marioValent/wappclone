@@ -120,10 +120,8 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                 joinRoom(data.id);
             };
 
-            const handleReceivedMessage = (
-                messages: React.SetStateAction<Message[]>
-            ) => {
-                setMessages(messages);
+            const handleReceivedMessage = (message: Message) => {
+                setMessages((prev) => [message, ...prev]);
             };
 
             socket.on("connect", handleConnect);

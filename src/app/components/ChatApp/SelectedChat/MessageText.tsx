@@ -20,7 +20,7 @@ const MessageText: React.FC<MessageTextProps> = ({
     const [isShowButtonVisible, setIsShowButtonVisible] = useState(false);
 
     const urlRegex = /(https?:\/\/\S+)/g;
-    const parts = message.text.split(urlRegex).filter((part) => part);
+    const parts = message.text?.split(urlRegex).filter((part) => part);
     const uniqueParts = Array.from(new Set(parts));
 
     const handleShowMoreVisibility = () => {

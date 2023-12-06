@@ -41,7 +41,7 @@ const ContentList = ({
             (chat) =>
                 chat.userId === user.id && chat.friendId === currentUser?.id
         );
-        const foundChatFriend = user.chatFriend.find(
+        const foundChatFriend = user.chatFriend?.find(
             (chat) =>
                 chat.userId === currentUser?.id && chat.friendId === user.id
         );
