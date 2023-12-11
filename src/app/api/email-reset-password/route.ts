@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { signJWT } from "@/lib/jwt";
 import db from "@/lib/db";
+import { BASE_URL } from "@/app/common";
 
 export async function POST(request: NextRequest) {
     try {
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
             from: NODEMAILER_EMAIL,
             to: body.to,
             subject: `Reset Passowrd for account: ${body.to}`,
-            text: `Access the following link in order to reset your password: https://mario.webmarc.cucuza.com/reset-password?query=${body.to}&token=${token}`,
+            text: `Access the following link in order to reset your password: ${BASE_URL}/reset-password?query=${body.to}&token=${token}`,
         };
         transporter.sendMail(mailOptions, (err, info) => {
             console.log(info.messageId);

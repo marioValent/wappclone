@@ -42,12 +42,23 @@ interface SelectedChatProps {
 const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
     ({ data, focusMessageInput, setSelectedChat }, ref) => {
         const scrollRef = useRef<HTMLDivElement | null>(null);
+        const msgListRef = useRef<HTMLOListElement | null>(null);
         const { currentUser, isLoading } = useCurrentUser();
         const socket = useSocket();
 
         const [isDrawerOpen, setDrawerOpen] = useState(false);
         const [messages, setMessages] = useState<Message[]>([]);
         const [messageInputValue, setMessageInputValue] = useState("");
+        const [messageSent, setMessageSent] = useState(0);
+
+        // from MessageText - get isDropdownOpen value
+        const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+        const [initialScrollPosition, setInitialScrollPosition] = useState(0);
+
+        const getDropdownState = (isOpen: boolean) => {
+            setIsDropdownOpen(isOpen);
+        };
+        // end
 
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             const { value } = e.target;
@@ -119,9 +130,9 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             const handleConnect = () => {
                 joinRoom(data.id);
             };
-
             const handleReceivedMessage = (message: Message) => {
                 setMessages((prev) => [message, ...prev]);
+                setMessageSent((prev) => prev + 1);
             };
 
             socket.on("connect", handleConnect);
@@ -140,10 +151,25 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         }, [data.id]);
 
         useEffect(() => {
+            //move scrollbar to bottom
             if (scrollRef.current) {
                 scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
             }
-        }, [messages, isLoading]);
+        }, [isLoading, messageSent]);
+
+        // code to block the scrollbar when dropdown is open
+        useEffect(() => {
+            if (isDropdownOpen && scrollRef.current) {
+                setInitialScrollPosition(scrollRef.current.scrollTop);
+            }
+        }, [isDropdownOpen]);
+
+        const handleScroll = () => {
+            if (isDropdownOpen && scrollRef.current) {
+                scrollRef.current.scrollTop = initialScrollPosition;
+            }
+        };
+        // end
 
         if (isLoading) return <Spinner customClassName="h-5/6" />;
 
@@ -162,9 +188,14 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                     <div
                         className="h-full grid overflow-auto scrollbar z-20"
                         ref={scrollRef}
+                        onScroll={handleScroll}
                     >
                         {messages?.length > 0 ? (
-                            <ol className="relative flex flex-col-reverse flex-grow px-16 py-4">
+                            <ol
+                                id="message-list"
+                                ref={msgListRef}
+                                className="relative flex flex-col-reverse flex-grow px-10 py-4"
+                            >
                                 {messages.map((message, index) => (
                                     <Fragment key={message.id}>
                                         <MessageText
@@ -174,6 +205,10 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                                 message.senderId ===
                                                 currentUser?.id
                                             }
+                                            msgListRef={msgListRef}
+                                            messages={messages}
+                                            setMessages={setMessages}
+                                            onDropdownToggle={getDropdownState}
                                         />
                                         {displayDate(
                                             index,

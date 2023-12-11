@@ -53,6 +53,24 @@ io.on("connection", (socket) => {
             console.error("Error sending message:", error);
         }
     });
+
+    socket.on("delete-message", async (roomId, messageId) => {
+        try {
+            console.log("deleting message...", roomId, messageId);
+
+            await db.message.delete({
+                where: {
+                    id: messageId,
+                },
+            });
+
+            io.to(roomId).emit("message-deleted", messageId);
+
+            console.log("message deleted");
+        } catch (error) {
+            console.error("Error deleting message:", error);
+        }
+    });
 });
 
 server.listen(4000, () => {

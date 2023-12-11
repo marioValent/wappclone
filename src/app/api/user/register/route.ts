@@ -18,9 +18,12 @@ export async function POST(request: NextRequest) {
             token: token,
         });
     } catch (err) {
-        return NextResponse.json({
-            message: "User not created",
-            token: null,
-        });
+        return NextResponse.json(
+            {
+                message: "User not created",
+                token: null,
+            },
+            { status: 400 }
+        );
     }
 }
