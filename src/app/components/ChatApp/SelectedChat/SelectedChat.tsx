@@ -11,17 +11,13 @@ import EmojiDrawer from "./EmojiDrawer";
 import Input from "../../shared/Input";
 import MessageText from "./MessageText";
 import Spinner from "../../shared/Spinner";
+import SelectedChatNavbar from "./SelectedChatNavbar";
 import { useCurrentUser, useSocket } from "@/app/hooks";
 import closeIcon from "@/../public/closeIcon.svg";
 import emojiIcon from "@/../public/emojiIcon.svg";
 import keyboardVoiceIcon from "@/../public/keyboardVoiceIcon.svg";
-import myProfileIcon from "@/../public/myProfile.svg";
 import sendArrow from "@/../public/sendArrow.svg";
-import {
-    displayDate,
-    getContentData,
-    getNavbarData,
-} from "./SelectedChat.utils";
+import { displayBin, displayDate, getContentData } from "./SelectedChat.utils";
 import {
     BASE_URL,
     Chat,
@@ -60,6 +56,37 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         };
         // end
 
+        // to SelectedChatNavbar
+        const [messageSelectionActive, setMessageSelectionActive] =
+            useState(false);
+        // end
+
+        // message selection logic start
+        const [selectedMessages, setSelectedMessages] = useState<Message[]>([]);
+
+        const onMessageSelectedClick = (message: Message) => {
+            // Check if the message is already selected
+            const isSelected = selectedMessages.some(
+                (selectedMessage) => selectedMessage.id === message.id
+            );
+
+            if (isSelected) {
+                // If already selected, remove it from the selectedMessages array
+                setSelectedMessages((prevSelectedMessages) =>
+                    prevSelectedMessages.filter(
+                        (selectedMessage) => selectedMessage.id !== message.id
+                    )
+                );
+            } else {
+                // If not selected, add it to the selectedMessages array
+                setSelectedMessages((prevSelectedMessages) => [
+                    ...prevSelectedMessages,
+                    message,
+                ]);
+            }
+        };
+        // message selection logic end
+
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             const { value } = e.target;
             setMessageInputValue(value);
@@ -81,13 +108,13 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                     );
                     const chatData = chatResponse.data.chat;
 
-                    joinRoom(chatData.id);
+                    joinRoom(chatData?.id);
 
                     socket.emit(
                         "send-message",
-                        chatData.id,
-                        chatData.userId,
-                        chatData.friendId,
+                        chatData?.id,
+                        chatData?.userId,
+                        chatData?.friendId,
                         messageInputValue
                     );
                     setSelectedChat(chatData);
@@ -107,6 +134,37 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             }
         };
 
+        // Delete selected messages logic start
+        const selectedMessageIds: string[] = selectedMessages.map(
+            (message) => message.id
+        );
+
+        const deleteMessages = (idsToDelete: string[]) => {
+            const updatedMessages = messages.filter(
+                (message) => !idsToDelete.includes(message.id)
+            );
+            setMessages(updatedMessages);
+        };
+
+        const handleDeleteMessages = async () => {
+            try {
+                await axios.delete(`${BASE_URL}/api/message/deleteSelected`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    data: {
+                        messageIds: selectedMessageIds,
+                    },
+                });
+                deleteMessages(selectedMessageIds);
+                setMessageSelectionActive(false);
+                setSelectedMessages([]);
+            } catch (error) {
+                console.error("Error deleting selected messages:", error);
+            }
+        };
+        // Delete selected messages logic end
+
         const onEnterDown = async (
             event: React.KeyboardEvent<HTMLInputElement>
         ) => {
@@ -124,6 +182,11 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             setMessageInputValue(
                 (prevMessageInputValue) => prevMessageInputValue + emoji
             );
+        };
+
+        const handleCloseMsgSelection = () => {
+            setMessageSelectionActive(false);
+            setSelectedMessages([]);
         };
 
         useEffect(() => {
@@ -150,14 +213,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             setMessages(getContentData(data)?.messages);
         }, [data.id]);
 
-        useEffect(() => {
-            //move scrollbar to bottom
-            if (scrollRef.current) {
-                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-            }
-        }, [isLoading, messageSent]);
-
-        // code to block the scrollbar when dropdown is open
+        // block the scrollbar when dropdown is open
         useEffect(() => {
             if (isDropdownOpen && scrollRef.current) {
                 setInitialScrollPosition(scrollRef.current.scrollTop);
@@ -168,23 +224,39 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             if (isDropdownOpen && scrollRef.current) {
                 scrollRef.current.scrollTop = initialScrollPosition;
             }
+            return;
         };
-        // end
+        // end block the scrollbar
+
+        // move scrollbar to bottom start
+        const [chatId, setChatId] = useState("");
+        useEffect(() => {
+            setChatId(data.id);
+        }, [data.id]);
+
+        useEffect(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            }
+        }, [isLoading, messageSent, chatId]);
+        // move scrollbar to bottom end
 
         if (isLoading) return <Spinner customClassName="h-5/6" />;
 
         return (
             <div className="relative z-10 h-full">
                 <div className="flex flex-col h-full bg-chat-panel">
-                    <div className="absolute h-full w-full bg-[url('/selected-chat-background.png')] bg-repeat bg-contain opacity-40"></div>
-                    <div className="flex justify-start items-center gap-2 bg-main-gray border-l border-main-gray-deeper py-1 px-4 z-20">
-                        <Image
-                            src={myProfileIcon}
-                            alt="profile icon"
-                            style={{ width: "3rem", height: "3rem" }}
-                        />
-                        <h2>{getNavbarData(data, currentUser)}</h2>
-                    </div>
+                    <div
+                        className={`absolute h-full w-full ${
+                            !messageSelectionActive &&
+                            "bg-[url('/selected-chat-background.png')] bg-repeat bg-contain"
+                        } opacity-40`}
+                    ></div>
+                    <SelectedChatNavbar
+                        currentUser={currentUser}
+                        data={data}
+                        setMessageSelectionActive={setMessageSelectionActive}
+                    />
                     <div
                         className="h-full grid overflow-auto scrollbar z-20"
                         ref={scrollRef}
@@ -194,21 +266,28 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                             <ol
                                 id="message-list"
                                 ref={msgListRef}
-                                className="relative flex flex-col-reverse flex-grow px-10 py-4"
+                                className="relative flex flex-col-reverse flex-grow py-4"
                             >
                                 {messages.map((message, index) => (
                                     <Fragment key={message.id}>
                                         <MessageText
                                             data={data}
-                                            message={message}
                                             isSender={
                                                 message.senderId ===
                                                 currentUser?.id
                                             }
                                             msgListRef={msgListRef}
+                                            message={message}
                                             messages={messages}
+                                            messageSelectionActive={
+                                                messageSelectionActive
+                                            }
+                                            selectedMessages={selectedMessages}
                                             setMessages={setMessages}
                                             onDropdownToggle={getDropdownState}
+                                            onHandleClick={() =>
+                                                onMessageSelectedClick(message)
+                                            }
                                         />
                                         {displayDate(
                                             index,
@@ -225,64 +304,99 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         ) : null}
                     </div>
 
+                    {/* FOOTER */}
                     <div className="z-30">
-                        <EmojiDrawer
-                            isDrawerOpen={isDrawerOpen}
-                            onEmojiSelect={handleEmojiSelect}
-                        />
-                        <div className="flex items-center px-4 gap-2 bg-main-gray h-20">
-                            <div className="flex justify-center gap-3 w-[10%]">
-                                {isDrawerOpen ? (
-                                    <Image
-                                        alt="close-icon"
-                                        src={closeIcon}
-                                        className="w-7 cursor-pointer"
-                                        onClick={closeEmojiDrawer}
+                        {messageSelectionActive ? (
+                            <Fragment>
+                                <div className="flex items-center justify-between px-[2.5rem] bg-main-gray h-20 z-30">
+                                    <div className="flex gap-4">
+                                        <Image
+                                            alt="close-msg-selection"
+                                            className="cursor-pointer"
+                                            src={closeIcon}
+                                            onClick={handleCloseMsgSelection}
+                                        />
+                                        <span>
+                                            {selectedMessages.length} Selected
+                                        </span>
+                                    </div>
+                                    <span
+                                        className="cursor-pointer"
+                                        onClick={handleDeleteMessages}
+                                    >
+                                        {displayBin()}
+                                    </span>
+                                </div>
+                            </Fragment>
+                        ) : (
+                            <Fragment>
+                                <EmojiDrawer
+                                    isDrawerOpen={isDrawerOpen}
+                                    onEmojiSelect={handleEmojiSelect}
+                                />
+                                <div className="flex items-center px-4 gap-2 bg-main-gray h-20">
+                                    <div className="flex justify-center gap-3 w-[10%]">
+                                        {isDrawerOpen ? (
+                                            <Image
+                                                alt="close-icon"
+                                                src={closeIcon}
+                                                className="w-7 cursor-pointer"
+                                                onClick={closeEmojiDrawer}
+                                            />
+                                        ) : (
+                                            <Image
+                                                alt="emoji-icon"
+                                                src={emojiIcon}
+                                                className="w-7 cursor-pointer"
+                                                onClick={openEmojiDrawer}
+                                            />
+                                        )}
+                                        <AttachDocument
+                                            messageInputValue={
+                                                messageInputValue
+                                            }
+                                            focusMessageInput={
+                                                focusMessageInput
+                                            }
+                                            handleInputChange={
+                                                handleInputChange
+                                            }
+                                            handleSendMessage={
+                                                handleSendMessage
+                                            }
+                                            onEnterDown={onEnterDown}
+                                        />
+                                    </div>
+                                    <Input
+                                        id="send-message-input"
+                                        classNameDiv="w-full"
+                                        className="input bg-white focus:outline-none p-3"
+                                        placeholder={
+                                            dictionary.selectedChat
+                                                .messageInputPlaceholder
+                                        }
+                                        ref={ref}
+                                        value={messageInputValue}
+                                        onKeyDown={onEnterDown}
+                                        onChange={handleInputChange}
                                     />
-                                ) : (
-                                    <Image
-                                        alt="emoji-icon"
-                                        src={emojiIcon}
-                                        className="w-7 cursor-pointer"
-                                        onClick={openEmojiDrawer}
-                                    />
-                                )}
-                                <AttachDocument
-                                    messageInputValue={messageInputValue}
-                                    focusMessageInput={focusMessageInput}
-                                    handleInputChange={handleInputChange}
-                                    handleSendMessage={handleSendMessage}
-                                    onEnterDown={onEnterDown}
-                                />
-                            </div>
-                            <Input
-                                id="send-message-input"
-                                classNameDiv="w-full"
-                                className="input bg-white focus:outline-none p-3"
-                                placeholder={
-                                    dictionary.selectedChat
-                                        .messageInputPlaceholder
-                                }
-                                ref={ref}
-                                value={messageInputValue}
-                                onKeyDown={onEnterDown}
-                                onChange={handleInputChange}
-                            />
-                            {messageInputValue ? (
-                                <Image
-                                    alt="send-arrow-icon"
-                                    className="w-8 cursor-pointer"
-                                    src={sendArrow}
-                                    onClick={handleSendMessage}
-                                />
-                            ) : (
-                                <Image
-                                    alt="keyboard-voice-icon"
-                                    src={keyboardVoiceIcon}
-                                    className="w-8 cursor-pointer"
-                                />
-                            )}
-                        </div>
+                                    {messageInputValue ? (
+                                        <Image
+                                            alt="send-arrow-icon"
+                                            className="w-8 cursor-pointer"
+                                            src={sendArrow}
+                                            onClick={handleSendMessage}
+                                        />
+                                    ) : (
+                                        <Image
+                                            alt="keyboard-voice-icon"
+                                            src={keyboardVoiceIcon}
+                                            className="w-8 cursor-pointer"
+                                        />
+                                    )}
+                                </div>
+                            </Fragment>
+                        )}
                     </div>
                 </div>
             </div>
