@@ -16,7 +16,7 @@ import { useCurrentUser, useSocket } from "@/app/hooks";
 import closeIcon from "@/../public/closeIcon.svg";
 import emojiIcon from "@/../public/emojiIcon.svg";
 import keyboardVoiceIcon from "@/../public/keyboardVoiceIcon.svg";
-import sendArrow from "@/../public/sendArrow.svg";
+import sendArrowIcon from "@/../public/sendArrow.svg";
 import { displayBin, displayDate, getContentData } from "./SelectedChat.utils";
 import {
     BASE_URL,
@@ -241,6 +241,31 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         }, [isLoading, messageSent, chatId]);
         // move scrollbar to bottom end
 
+        // different props start
+        const emojiIconProps = isDrawerOpen
+            ? {
+                  alt: "close-icon",
+                  src: closeIcon,
+                  onClick: closeEmojiDrawer,
+              }
+            : {
+                  alt: "emoji-icon",
+                  src: emojiIcon,
+                  onClick: openEmojiDrawer,
+              };
+
+        const sendArrowIconProps = messageInputValue
+            ? {
+                  alt: "send-arrow-icon",
+                  src: sendArrowIcon,
+                  onClick: handleSendMessage,
+              }
+            : {
+                  alt: "keyboard-voice-icon",
+                  src: keyboardVoiceIcon,
+              };
+        // different props end
+
         if (isLoading) return <Spinner customClassName="h-5/6" />;
 
         return (
@@ -308,7 +333,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                     <div className="z-30">
                         {messageSelectionActive ? (
                             <Fragment>
-                                <div className="flex items-center justify-between px-[2.5rem] bg-main-gray h-20 z-30">
+                                <div className="flex items-center justify-between pl-[2.5rem] pr-[1.5rem] bg-main-gray h-20 z-30">
                                     <div className="flex gap-4">
                                         <Image
                                             alt="close-msg-selection"
@@ -336,21 +361,10 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                 />
                                 <div className="flex items-center px-4 gap-2 bg-main-gray h-20">
                                     <div className="flex justify-center gap-3 w-[10%]">
-                                        {isDrawerOpen ? (
-                                            <Image
-                                                alt="close-icon"
-                                                src={closeIcon}
-                                                className="w-7 cursor-pointer"
-                                                onClick={closeEmojiDrawer}
-                                            />
-                                        ) : (
-                                            <Image
-                                                alt="emoji-icon"
-                                                src={emojiIcon}
-                                                className="w-7 cursor-pointer"
-                                                onClick={openEmojiDrawer}
-                                            />
-                                        )}
+                                        <Image
+                                            className="w-7 cursor-pointer"
+                                            {...emojiIconProps}
+                                        />
                                         <AttachDocument
                                             messageInputValue={
                                                 messageInputValue
@@ -380,20 +394,12 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                         onKeyDown={onEnterDown}
                                         onChange={handleInputChange}
                                     />
-                                    {messageInputValue ? (
+                                    <div className="px-2">
                                         <Image
-                                            alt="send-arrow-icon"
                                             className="w-8 cursor-pointer"
-                                            src={sendArrow}
-                                            onClick={handleSendMessage}
+                                            {...sendArrowIconProps}
                                         />
-                                    ) : (
-                                        <Image
-                                            alt="keyboard-voice-icon"
-                                            src={keyboardVoiceIcon}
-                                            className="w-8 cursor-pointer"
-                                        />
-                                    )}
+                                    </div>
                                 </div>
                             </Fragment>
                         )}
