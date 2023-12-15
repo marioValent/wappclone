@@ -91,7 +91,7 @@ export const displayTailOutSvg = () => {
     );
 };
 
-export const displayDropDownArrow = () => {
+export const displayDownArrow = () => {
     return (
         <svg
             viewBox="0 0 18 18"

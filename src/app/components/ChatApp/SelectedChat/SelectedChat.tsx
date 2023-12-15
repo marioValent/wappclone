@@ -17,7 +17,12 @@ import closeIcon from "@/../public/closeIcon.svg";
 import emojiIcon from "@/../public/emojiIcon.svg";
 import keyboardVoiceIcon from "@/../public/keyboardVoiceIcon.svg";
 import sendArrowIcon from "@/../public/sendArrow.svg";
-import { displayBin, displayDate, getContentData } from "./SelectedChat.utils";
+import {
+    displayBin,
+    displayDate,
+    displayDownArrow,
+    getContentData,
+} from "./SelectedChat.utils";
 import {
     BASE_URL,
     Chat,
@@ -43,9 +48,13 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         const socket = useSocket();
 
         const [isDrawerOpen, setDrawerOpen] = useState(false);
+
         const [messages, setMessages] = useState<Message[]>([]);
         const [messageInputValue, setMessageInputValue] = useState("");
         const [messageSent, setMessageSent] = useState(0);
+
+        const [showScrollToBottomArrow, setShowScrollToBottomArrow] =
+            useState(false);
 
         // from MessageText - get isDropdownOpen value
         const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -90,6 +99,12 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             const { value } = e.target;
             setMessageInputValue(value);
+        };
+
+        const scrollToBottom = () => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            }
         };
 
         const joinRoom = (id: string) => {
@@ -189,6 +204,18 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             setSelectedMessages([]);
         };
 
+        // function to show the arrow that scrolls to the bottom
+        const handleDisplayArrowToBottomScroll = () => {
+            if (scrollRef.current) {
+                const isScrolledToBottom: boolean =
+                    scrollRef.current.scrollTop ===
+                    scrollRef.current.scrollHeight -
+                        scrollRef.current.clientHeight;
+
+                setShowScrollToBottomArrow(!isScrolledToBottom);
+            }
+        };
+
         useEffect(() => {
             const handleConnect = () => {
                 joinRoom(data.id);
@@ -224,6 +251,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             if (isDropdownOpen && scrollRef.current) {
                 scrollRef.current.scrollTop = initialScrollPosition;
             }
+            handleDisplayArrowToBottomScroll();
             return;
         };
         // end block the scrollbar
@@ -235,9 +263,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         }, [data.id]);
 
         useEffect(() => {
-            if (scrollRef.current) {
-                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-            }
+            scrollToBottom();
         }, [isLoading, messageSent, chatId]);
         // move scrollbar to bottom end
 
@@ -327,6 +353,14 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                                 ))}
                             </ol>
                         ) : null}
+                        {showScrollToBottomArrow && (
+                            <span
+                                className="absolute bottom-[5.5rem] right-3 bg-white shadow-md cursor-pointer rounded-full p-1.5 z-40"
+                                onClick={scrollToBottom}
+                            >
+                                {displayDownArrow()}
+                            </span>
+                        )}
                     </div>
 
                     {/* FOOTER */}

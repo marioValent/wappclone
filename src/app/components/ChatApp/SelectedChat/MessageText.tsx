@@ -7,7 +7,7 @@ import Dropdown from "../../shared/Dropdown";
 import checkedBox from "@/../public/checked-box.svg";
 import uncheckedBox from "@/../public/unchecked-box.svg";
 import {
-    displayDropDownArrow,
+    displayDownArrow,
     displayTailInSvg,
     displayTailOutSvg,
 } from "./SelectedChat.utils";
@@ -171,7 +171,7 @@ const MessageText: React.FC<MessageTextProps> = ({
                         }`}
                         onClick={handleDropdownToggle}
                     >
-                        {displayDropDownArrow()}
+                        {displayDownArrow()}
                     </div>
                 )}
                 {!isSender && displayTailInSvg()}
