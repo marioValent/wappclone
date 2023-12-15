@@ -208,7 +208,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
         const handleDisplayArrowToBottomScroll = () => {
             if (scrollRef.current) {
                 const isScrolledToBottom: boolean =
-                    scrollRef.current.scrollTop ===
+                    Math.ceil(scrollRef.current.scrollTop) ===
                     scrollRef.current.scrollHeight -
                         scrollRef.current.clientHeight;
 
