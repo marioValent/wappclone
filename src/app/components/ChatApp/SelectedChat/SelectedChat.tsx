@@ -111,8 +111,11 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             socket.emit("join-room", id);
         };
 
-        const handleSendMessage = async () => {
-            if (getContentData(data) === undefined && messageInputValue) {
+        const handleSendMessage = async (attachedUrl?: any) => {
+            if (
+                getContentData(data) === undefined &&
+                (messageInputValue || attachedUrl)
+            ) {
                 try {
                     const chatResponse = await axios.post(
                         `${BASE_URL}/api/chat/create`,
@@ -125,25 +128,31 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
 
                     joinRoom(chatData?.id);
 
+                    console.log("attachedUrl: ", attachedUrl);
                     socket.emit(
                         "send-message",
                         chatData?.id,
                         chatData?.userId,
                         chatData?.friendId,
-                        messageInputValue
+                        attachedUrl
+                            ? `${attachedUrl} ${" "} ${messageInputValue}`
+                            : messageInputValue
                     );
                     setSelectedChat(chatData);
                     setMessageInputValue("");
                 } catch (error) {
                     throw error;
                 }
-            } else if (messageInputValue) {
+            } else if (messageInputValue || attachedUrl) {
+                console.log("attachedUrl: ", attachedUrl);
                 socket.emit(
                     "send-message",
                     data.id,
                     currentUser?.id,
                     (data as Chat).friendId,
-                    messageInputValue
+                    attachedUrl
+                        ? `${attachedUrl} ${" "} ${messageInputValue}`
+                        : messageInputValue
                 );
                 setMessageInputValue("");
             }

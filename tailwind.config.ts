@@ -33,6 +33,7 @@ const config: Config = {
                 "chat-panel": "#efeae2",
                 "blue-link": "#027eb5",
                 "msg-select-hover": "rgba(0,128,105,0.08)",
+                "meta-msg": "#d1f4cc",
             },
             filter: {
                 "color-white": "brightness(0) invert(1)",

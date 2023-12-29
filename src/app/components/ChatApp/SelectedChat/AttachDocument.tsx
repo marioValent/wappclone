@@ -1,18 +1,20 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
 import Image from "next/image";
+import axios from "axios";
+import AttachMessageInput from "./AttachMessageInput";
 import attachIcon from "@/../public/attachIcon.svg";
 import closeIcon from "@/../public/closeIcon.svg";
 import sendArrow from "@/../public/sendArrow.svg";
-import { Document, Page, pdfjs } from "react-pdf";
-import AttachMessageInput from "./AttachMessageInput";
+import { BASE_URL } from "@/app/common";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 interface AttachDocumentProps {
     messageInputValue: string;
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleSendMessage: () => void;
+    handleSendMessage: (attachedUrl: string) => void;
     focusMessageInput: () => void;
     onEnterDown: (
         event: React.KeyboardEvent<HTMLInputElement>
@@ -26,16 +28,17 @@ const AttachDocument: React.FC<AttachDocumentProps> = ({
     focusMessageInput,
     onEnterDown,
 }) => {
+    const attachMessageRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const imageRef = useRef<HTMLImageElement | null>(null);
+
+    const [isOpen, setIsOpen] = useState(false);
     const [fileFormat, setFileFormat] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [imageDimensions, setImageDimensions] = useState<{
         width: number;
         height: number;
     } | null>({ width: 0, height: 0 });
-    const attachMessageRef = useRef<HTMLInputElement>(null);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const imageRef = useRef<HTMLImageElement | null>(null);
-    const [isOpen, setIsOpen] = useState(false);
 
     const handleImageLoad = () => {
         if (imageRef.current) {
@@ -82,8 +85,39 @@ const AttachDocument: React.FC<AttachDocumentProps> = ({
         focusMessageInput();
     };
 
-    const handleOnClickSendArrow = () => {
-        handleSendMessage();
+    const attachDocument = async () => {
+        const formData = new FormData();
+
+        if (selectedFile) {
+            formData.set("file", selectedFile);
+        } else {
+            console.error("No file selected");
+            return "";
+        }
+
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/api/attach-document`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+            return `${response.data.response.url}${selectedFile.name.replace(
+                /\s/g,
+                "%20"
+            )}?authuser=1`;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const handleOnClickSendArrow = async () => {
+        const attachedUrl = await attachDocument();
+        console.log("response: ", attachedUrl);
+        handleSendMessage(attachedUrl);
         handleClose();
     };
 
@@ -94,10 +128,11 @@ const AttachDocument: React.FC<AttachDocumentProps> = ({
     }, [selectedFile]);
 
     useEffect(() => {
-        const handleKeyPress = (event: KeyboardEvent) => {
+        const handleKeyPress = async (event: KeyboardEvent) => {
             if (event.key === "Enter") {
+                const attachedUrl = await attachDocument();
+                handleSendMessage(attachedUrl);
                 handleClose();
-                handleSendMessage();
             }
         };
 

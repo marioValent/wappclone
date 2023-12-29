@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import PdfViewer from "../../shared/PdfViewer";
 import Spinner from "../../shared/Spinner";
 import { BASE_URL, MetaParserDefault } from "@/app/common";
 
@@ -32,12 +33,25 @@ const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({ url }) => {
 
     if (isLoading) return <Spinner />;
 
+    if (url.endsWith(".pdf?authuser=1")) return <PdfViewer url={url} />;
+
+    if (url.endsWith("authuser=1"))
+        return (
+            <img
+                alt="google-img"
+                src={url}
+                width={150}
+                height={150}
+                className="object-contain bg-meta-msg"
+            />
+        );
+
     return (
         <div className="flex flex-col gap-2">
             <div
                 className={`${
                     metaData.title || metaData.description || metaData.imageUrl
-                        ? "flex flex-col items-center gap-2 bg-[#d1f4cc] py-1.5 px-2.5 w-full rounded-md"
+                        ? "flex flex-col items-center gap-2 bg-meta-msg py-1.5 px-2.5 w-full rounded-md"
                         : "hidden"
                 }`}
             >
@@ -62,7 +76,7 @@ const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({ url }) => {
             </div>
 
             <a
-                className="text-blue-link hover:underline px-2.5"
+                className="text-blue-link hover:underline"
                 href={url}
                 target="_blank"
             >
