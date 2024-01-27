@@ -111,7 +111,9 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
             socket.emit("join-room", id);
         };
 
-        const handleSendMessage = async (attachedUrl?: any) => {
+        const handleSendMessage = async (
+            attachedUrl?: string | React.BaseSyntheticEvent
+        ) => {
             if (
                 getContentData(data) === undefined &&
                 (messageInputValue || attachedUrl)
@@ -134,7 +136,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                         chatData?.id,
                         chatData?.userId,
                         chatData?.friendId,
-                        attachedUrl
+                        attachedUrl && typeof attachedUrl !== "object"
                             ? `${attachedUrl} ${" "} ${messageInputValue}`
                             : messageInputValue
                     );
@@ -150,7 +152,7 @@ const SelectedChat = forwardRef<HTMLInputElement, SelectedChatProps>(
                     data.id,
                     currentUser?.id,
                     (data as Chat).friendId,
-                    attachedUrl
+                    attachedUrl && typeof attachedUrl !== "object"
                         ? `${attachedUrl} ${" "} ${messageInputValue}`
                         : messageInputValue
                 );

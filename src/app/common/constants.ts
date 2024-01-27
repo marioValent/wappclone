@@ -1,6 +1,6 @@
 import { Chat, MetaParser } from "./types";
 
-export const BASE_URL = "https://mario.webmarc.cucuza.com";
+export const BASE_URL = "http://localhost:3000/";
 export const isCurrentUser = (id: string | undefined, currentUser: string) =>
     id === currentUser;
 

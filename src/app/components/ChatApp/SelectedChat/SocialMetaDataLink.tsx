@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import axios from "axios";
 import PdfViewer from "../../shared/PdfViewer";
 import Spinner from "../../shared/Spinner";
@@ -55,13 +56,13 @@ const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({ url }) => {
                         : "hidden"
                 }`}
             >
-                <a
+                <Link
                     className="text-blue-link font-bold hover:underline"
                     href={url}
                     target="_blank"
                 >
                     {metaData.title}
-                </a>
+                </Link>
                 <span className="text-black cursor-text">
                     {metaData.description}
                 </span>
@@ -75,13 +76,13 @@ const SocialMetadataLink: React.FC<SocialMetadataLinkProps> = ({ url }) => {
                 />
             </div>
 
-            <a
+            <Link
                 className="text-blue-link hover:underline"
                 href={url}
                 target="_blank"
             >
                 {url}
-            </a>
+            </Link>
         </div>
     );
 };
